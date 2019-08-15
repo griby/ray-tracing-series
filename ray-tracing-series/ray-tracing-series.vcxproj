@@ -124,9 +124,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\vec3.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ray.h" />
     <ClInclude Include="src\vec3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
