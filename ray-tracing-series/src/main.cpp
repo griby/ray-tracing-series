@@ -2,6 +2,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "vec3.h"
+
 const std::string IMAGE_FILE_PATH = "assets/simple_image.ppm";
 
 int main()
@@ -24,13 +26,10 @@ int main()
             // From left to right
             for (int i = 0; i < nx; ++i)
             {
-                float r = float(i) / float(nx);
-                float g = float(j) / float(ny);
-                float b = 0.2f;
-
-                int ir = int(255.99f * r);
-                int ig = int(255.99f * g);
-                int ib = int(255.99f * b);
+                rts::vec3 color(float(i) / float(nx), float(j) / float(ny), 0.2f);
+                int ir = int(255.99f * color[0]);
+                int ig = int(255.99f * color[1]);
+                int ib = int(255.99f * color[2]);
 
                 imageFile << ir << " " << ig << " " << ib << std::endl;
             }
