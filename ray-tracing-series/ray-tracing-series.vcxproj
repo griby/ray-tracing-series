@@ -127,6 +127,7 @@
     <ClCompile Include="src\sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\hitable.h" />
     <ClInclude Include="src\hitableList.h" />
     <ClInclude Include="src\ray.h" />

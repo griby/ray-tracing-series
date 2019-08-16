@@ -3,13 +3,17 @@
 #include <iostream>
 #include <fstream>
 #include <limits>
+#include <random>
 
 #include "vec3.h"
 #include "ray.h"
 #include "sphere.h"
 #include "hitableList.h"
+#include "camera.h"
 
 using namespace rts;
+
+#define DETERMINISTIC_EXECUTION 1
 
 const std::string IMAGE_FILE_PATH = "output/image.ppm";
 
@@ -40,40 +44,57 @@ int main()
     std::ofstream imageFile(IMAGE_FILE_PATH);
     if (imageFile.is_open())
     {
-        int nx = 200;
-        int ny = 100;
+        int nx = 200;   // image's width
+        int ny = 100;   // image's height
+        int ns = 100;   // amount of samples per pixel
+
+        // Initialize the random number generator
+#if DETERMINISTIC_EXECUTION
+        std::mt19937 gen;           // initialize the mersenne twister engine without a seed so that it falls back on a default constant
+#else
+        std::random_device rd;      // create a random device to seed the pseudo-random generator
+        std::mt19937 gen(rd());     // initialize the mersenne twister engine with a random seed (we could also use the clock)
+#endif
+        std::uniform_real_distribution<> dist(0.f, 1.f); // distribute the results in [0, 1)
 
         // Write the image file header
         imageFile << "P3" << std::endl;
         imageFile << nx << " " << ny << std::endl;
         imageFile << "255" << std::endl;
 
-        vec3 lowerLeftCorner(-2.f, -1.f, -1.f);
-        vec3 horizontal(4.f, 0.f, 0.f);
-        vec3 vertical(0.f, 2.f, 0.f);
-        vec3 origin(0.f, 0.f, 0.f);
-
-        // Create the list of hitable objects
+        // Set up the world and camera
         HitableList<2> world;
         world[0] = std::move(std::make_unique<Sphere>(vec3(0.f, 0.f, -1.f), 0.5f));         // sphere at the center of the screen
         world[1] = std::move(std::make_unique<Sphere>(vec3(0.f, -100.5f, -1.f), 100.f));    // sphere representing the ground
+        Camera cam;
 
         // Determine each pixel's color from left to right and top to bottom
         for (int j = ny - 1; j >= 0; --j)
         {
             for (int i = 0; i < nx; ++i)
             {
-                float u = float(i) / float(nx);
-                float v = float(j) / float(ny);
+                vec3 col(0.f, 0.f, 0.f); // the accumulated color
 
-                // Ray trace between the camera (origin) and the current pixel (offset from the lower-left corner)
-                Ray r(origin, lowerLeftCorner + u * horizontal + v * vertical);
-                vec3 c = color(r, world);
+                // Sample multiple times randomly within the current pixel
+                for (int s = 0; s < ns; ++s)
+                {
+                    float u = float(i + dist(gen)) / float(nx);
+                    float v = float(j + dist(gen)) / float(ny);
+                    Ray r = cam.getRay(u, v);
 
-                int ir = int(255.99f * c[0]);
-                int ig = int(255.99f * c[1]);
-                int ib = int(255.99f * c[2]);
+                    // Accumulate the sample
+                    col += color(r, world);
+                }
 
+                // Average the color
+                col /= static_cast<float>(ns);
+
+                // Scale the color between 0 and 255
+                int ir = int(255.99f * col[0]);
+                int ig = int(255.99f * col[1]);
+                int ib = int(255.99f * col[2]);
+
+                // Output the color to the image file
                 imageFile << ir << " " << ig << " " << ib << std::endl;
             }
         }
