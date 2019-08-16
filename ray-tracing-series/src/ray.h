@@ -4,11 +4,11 @@
 
 namespace rts // for ray tracing series
 {
-    class ray
+    class Ray
     {
     public:
-        ray() : a(), b() {}
-        ray(const vec3& _a, const vec3& _b) : a(_a), b(_b) {}
+        Ray() : a(), b() {}
+        Ray(const vec3& _a, const vec3& _b) : a(_a), b(_b) {}
 
         vec3 origin() const { return a; }
         vec3 direction() const { return b; }

@@ -14,10 +14,10 @@ using namespace rts;
 const std::string IMAGE_FILE_PATH = "output/image.ppm";
 
 template <int N>
-vec3 color(const ray& r, const hitableList<N>& world)
+vec3 color(const Ray& r, const HitableList<N>& world)
 {
     // Check if the ray hits a sphere at the center of the screen
-    hitRecord rec;
+    HitRecord rec;
     if (world.hit(r, 0.f, std::numeric_limits<float>::max(), rec))
     {
         // The normal is a unit vector ie its components fall between -1 and +1
@@ -54,9 +54,9 @@ int main()
         vec3 origin(0.f, 0.f, 0.f);
 
         // Create the list of hitable objects
-        hitableList<2> world;
-        world[0] = std::move(std::make_unique<sphere>(vec3(0.f, 0.f, -1.f), 0.5f));         // sphere at the center of the screen
-        world[1] = std::move(std::make_unique<sphere>(vec3(0.f, -100.5f, -1.f), 100.f));    // sphere representing the ground
+        HitableList<2> world;
+        world[0] = std::move(std::make_unique<Sphere>(vec3(0.f, 0.f, -1.f), 0.5f));         // sphere at the center of the screen
+        world[1] = std::move(std::make_unique<Sphere>(vec3(0.f, -100.5f, -1.f), 100.f));    // sphere representing the ground
 
         // Determine each pixel's color from left to right and top to bottom
         for (int j = ny - 1; j >= 0; --j)
@@ -67,7 +67,7 @@ int main()
                 float v = float(j) / float(ny);
 
                 // Ray trace between the camera (origin) and the current pixel (offset from the lower-left corner)
-                ray r(origin, lowerLeftCorner + u * horizontal + v * vertical);
+                Ray r(origin, lowerLeftCorner + u * horizontal + v * vertical);
                 vec3 c = color(r, world);
 
                 int ir = int(255.99f * c[0]);

@@ -4,16 +4,16 @@
 
 namespace rts // for ray tracing series
 {
-    class sphere : public hitable
+    class Sphere : public Hitable
     {
     public:
-        sphere() : center(vec3()), radius(0.f) {}
-        sphere(vec3 _center, float _radius) : center(_center), radius(_radius) {}
+        Sphere() : center(vec3()), radius(0.f) {}
+        Sphere(vec3 _center, float _radius) : center(_center), radius(_radius) {}
 
-        virtual bool hit(const ray& r, float tMin, float tMax, hitRecord& rec) const;
+        virtual bool hit(const Ray& r, float tMin, float tMax, HitRecord& rec) const;
 
     private:
-        inline void setHitRecord(hitRecord& rec, float t, const ray& r) const;
+        inline void setHitRecord(HitRecord& rec, float t, const Ray& r) const;
 
         vec3 center;
         float radius;

@@ -2,7 +2,7 @@
 
 namespace rts
 {
-    bool sphere::hit(const ray& r, float tMin, float tMax, hitRecord& rec) const
+    bool Sphere::hit(const Ray& r, float tMin, float tMax, HitRecord& rec) const
     {
         // Compute the discriminant as described in the comments at the end of this file
         // Note that a bunch of redundant "times 2" factors have been removed
@@ -38,14 +38,14 @@ namespace rts
         return false;
     }
 
-    void sphere::setHitRecord(hitRecord& rec, float t, const ray& r) const
+    void Sphere::setHitRecord(HitRecord& rec, float t, const Ray& r) const
     {
         rec.t = t;
         rec.p = r.pointAtParameter(rec.t);
         rec.normal = (rec.p - center) / radius;
     }
 
-    // Previous hitSphere function which has been replaced by the sphere:hit method (see above)
+    // Previous hitSphere function which has been replaced by the Sphere:hit method (see above)
     // To determine if a ray hits a sphere consider this,
     // any point P that's on a sphere of radius R and center C must satisfy the following equation:
     //      (Px-Cx)*(Px-Cx) + (Py-Cy)*(Py-Cy) + (Pz-Cz)*(Pz-Cz) = R*R
@@ -65,7 +65,7 @@ namespace rts
     //      if discriminant > 0, there's 2 real solutions which means the ray hits the sphere twice
     //      if discriminant = 0, there's only one real solution which means the ray hits the sphere only once (it is tangent to the sphere)
     //      if discriminant < 0, there's no real solution which means that the ray doesn't hit the sphere
-    /*float hitSphere(const vec3& center, float radius, const ray& r)
+    /*float hitSphere(const vec3& center, float radius, const Ray& r)
     {
         vec3 oc = r.origin() - center;
         float a = dot(r.direction(), r.direction());

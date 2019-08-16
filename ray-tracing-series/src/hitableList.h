@@ -7,16 +7,16 @@
 namespace rts // for ray tracing series
 {
     template<int N>
-    class hitableList : public std::array<std::unique_ptr<const hitable>, N>
+    class HitableList : public std::array<std::unique_ptr<const Hitable>, N>
     {
     public:
-        virtual bool hit(const ray& r, float tMin, float tMax, hitRecord& rec) const;
+        virtual bool hit(const Ray& r, float tMin, float tMax, HitRecord& rec) const;
     };
 
     template<int N>
-    bool hitableList<N>::hit(const ray& r, float tMin, float tMax, hitRecord& rec) const
+    bool HitableList<N>::hit(const Ray& r, float tMin, float tMax, HitRecord& rec) const
     {
-        hitRecord tempRec;
+        HitRecord tempRec;
         bool hitAnything = false;
         float closestSoFar = tMax;
 
