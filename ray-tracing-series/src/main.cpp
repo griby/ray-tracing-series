@@ -11,8 +11,11 @@ using namespace rts;
 
 const std::string IMAGE_FILE_PATH = "output/image.ppm";
 
+const vec3 SPHERE_CENTER(0.f, 0.f, -1.f);
+const float SPHERE_RADIUS(0.5f);
+
 // hitSphere function, find more information at the bottom of this file
-bool hitSphere(const vec3& center, float radius, const ray& r)
+float hitSphere(const vec3& center, float radius, const ray& r)
 {
     vec3 oc = r.origin() - center;
     float a = dot(r.direction(), r.direction());
@@ -20,20 +23,33 @@ bool hitSphere(const vec3& center, float radius, const ray& r)
     float c = dot(oc, oc) - radius * radius;
     float discriminant = b * b - 4 * a * c;
 
-    return discriminant > 0;
+    if (discriminant < 0)
+    {
+        return -1.f;
+    }
+    else
+    {
+        // Let's assume the smallest solution value is the closest to the camera
+        // if it's negative, it is behind the camera and will be ignored
+        return (-b - sqrt(discriminant)) / (2.f * a);
+    }
 }
 
 vec3 color(const ray& r)
 {
     // Check if the ray hits a sphere at the center of the screen
-    if (hitSphere(vec3(0.f, 0.f, -1.f), 0.5f, r))
+    float t = hitSphere(SPHERE_CENTER, SPHERE_RADIUS, r);
+
+    // If the result is positive, the ray hit the sphere in front of the camera (negative means behind the camera)
+    if (t > 0.f)
     {
-        return vec3(1.f, 0.f, 0.f);
+        vec3 normal = unitVector(r.pointAtParameter(t) - SPHERE_CENTER);            // normal is a unit vector, its components are between -1 and +1
+        return 0.5f * vec3(normal.x() + 1.f, normal.y() + 1.f, normal.z() + 1.f);   // map the components between 0 and +1
     }
 
     // The sphere is not hit, determine the background's color
-    vec3 unitDirection = unitVector(r.direction()); // unitDirection Y is between -1 and +1
-    float t = 0.5f * (unitDirection.y() + 1.f);     // scale unitDirection Y between 0 and +1
+    vec3 unitDirection = unitVector(r.direction());     // unitDirection Y is between -1 and +1
+    t = 0.5f * (unitDirection.y() + 1.f);               // scale unitDirection Y between 0 and +1
 
     // Blend between white and blue depending on the direction Y
     return (1.f - t) * vec3(1.f, 1.f, 1.f) + t * vec3(0.5f, 0.7f, 1.f);
