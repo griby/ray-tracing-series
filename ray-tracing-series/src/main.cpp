@@ -3,6 +3,7 @@
 #include <chrono>
 #include <fstream>
 #include <iostream>
+#include <memory>
 
 #include "camera.h"
 #include "config.h"
