@@ -1,6 +1,5 @@
 // Ray Tracing in One Weekend Book Series by Peter Shirley
 
-#include <chrono>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -13,6 +12,7 @@
 #include "hitableList.h"
 #include "rayTracer.h"
 #include "sphere.h"
+#include "timer.h"
 #include "vec3.h"
 
 namespace rts // for ray tracing series
@@ -48,28 +48,39 @@ int main()
 {
     using namespace rts;
 
-    std::cout << "Ray Tracing in One Weekend Book Series by Peter Shirley" << std::endl;
+    std::cout << "Ray Tracing in One Weekend Book Series by Peter Shirley\n\n";
 
-    // Save the time before ray tracing
-    auto startTime = std::chrono::system_clock::now();
+    ////////////////////////////////////////////////////////////////////////////////
+    std::cout << "Setting up the world..." << std::endl;
+    Timer timer;
+    timer.setStartTime();
 
-    // Set up the world and camera
     HitableList<2> world;
     world[0] = std::move(std::make_unique<Sphere>(vec3(0.f, 0.f, -1.f), 0.5f));         // sphere at the center of the screen
     world[1] = std::move(std::make_unique<Sphere>(vec3(0.f, -100.5f, -1.f), 100.f));    // sphere representing the ground
     Camera camera(IMAGE_ASPECT_RATIO);
 
-    // Ray tracing
+    std::cout << "Done! (" << timer.getElapsedTime() << ")\n\n";
+
+    ////////////////////////////////////////////////////////////////////////////////
+    std::cout << "Performing ray tracing..." << std::endl;
+    timer.setStartTime();
+
     auto imageData = std::make_unique<ImageData>();
     performRayTracing(camera, world, imageData.get());
 
-    // Output to file
+    std::cout << "Done! (" << timer.getElapsedTime() << ")\n\n";
+
+    ////////////////////////////////////////////////////////////////////////////////
+    std::cout << "Writing the image file..." << std::endl;
+    timer.setStartTime();
+
     writeImageFile(imageData.get());
 
-    // Compute and display the elapsed time
-    auto endTime = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsedSeconds = endTime - startTime;
-    std::cout << "The process took " << elapsedSeconds.count() << "s to complete" << std::endl;
+    std::cout << "Done! (" << timer.getElapsedTime() << ")\n\n";
+
+    ////////////////////////////////////////////////////////////////////////////////
+    std::cout << "All done!" << std::endl;
 
     return 0;
 }
