@@ -1,6 +1,7 @@
 // Ray Tracing in One Weekend Book Series by Peter Shirley
 
 #include <fstream>
+#include <future>
 #include <iostream>
 #include <memory>
 #include <tuple>
@@ -63,11 +64,18 @@ int main()
     std::cout << "Done! (" << timer.getElapsedTime() << ")\n\n";
 
     ////////////////////////////////////////////////////////////////////////////////
-    std::cout << "Performing ray tracing..." << std::endl;
+    std::cout << "Performing ray tracing";
     timer.setStartTime();
 
     auto imageData = std::make_unique<ImageData>();
-    performRayTracing(camera, world, imageData.get());
+    auto rayTracingTask = std::async(std::launch::async, [&]() { performRayTracing(camera, world, imageData.get()); });
+
+    // Check periodically if the task is completed
+    while (rayTracingTask.wait_for(std::chrono::milliseconds(500)) != std::future_status::ready)
+    {
+        std::cout << ".";
+    }
+    std::cout << std::endl;
 
     std::cout << "Done! (" << timer.getElapsedTime() << ")\n\n";
 
