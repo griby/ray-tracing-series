@@ -3,20 +3,23 @@
 #include <iostream>
 #include <fstream>
 #include <limits>
-#include <random>
 
 #include "vec3.h"
 #include "ray.h"
 #include "sphere.h"
 #include "hitableList.h"
 #include "camera.h"
+#include "random.h"
 
 using namespace rts;
 
 
-#define DETERMINISTIC_EXECUTION 1
-#define NORMAL_MAP_COLOR 0
+// The configuration defines as set in the preprocessor definitions:
+// Project Properties > C/C++ > Preprocessor > Preprocessor Definitions
+//  * DETERMINISTIC_EXECUTION=1
+//  * NORMAL_MAP_COLOR=0
 
+// Image output path
 const std::string IMAGE_FILE_PATH = "output/image.ppm";
 
 // Image resolution
@@ -32,21 +35,8 @@ const float T_MIN = 0.001f;
 const float T_MAX = std::numeric_limits<float>::max();
 
 
-// Initialize the random number generator
-#if DETERMINISTIC_EXECUTION
-    std::mt19937 gen;           // initialize the mersenne twister engine without a seed so that it falls back on a default constant
-#else
-    std::random_device rd;      // create a random device to seed the pseudo-random generator
-    std::mt19937 gen(rd());     // initialize the mersenne twister engine with a random seed (we could also use the clock)
-#endif
-    std::uniform_real_distribution<float> dist(0.f, 1.f); // distribute the results in [0, 1)
-
-
-// Return a random float in [0, 1)
-inline float getRandom()
-{
-    return dist(gen);
-}
+// Initialize a global random value generator
+Random random;
 
 vec3 randomPointInUnitSphere()
 {
@@ -54,7 +44,7 @@ vec3 randomPointInUnitSphere()
     do
     {
         // Generate a random point in a unit cube ie its components fall between -1 and +1
-        p = 2.f * vec3(getRandom(), getRandom(), getRandom()) - vec3(1.f, 1.f, 1.f);
+        p = 2.f * vec3(random.get(), random.get(), random.get()) - vec3(1.f, 1.f, 1.f);
 
         // Until we find one that is contained in the unit sphere
     } while (p.squaredLength() >= 1.f);
@@ -116,8 +106,8 @@ int main()
                 // Sample multiple times randomly within the current pixel
                 for (int s = 0; s < SAMPLES_PER_PIXEL; ++s)
                 {
-                    float u = float(i + getRandom()) / float(IMAGE_WIDTH);
-                    float v = float(j + getRandom()) / float(IMAGE_HEIGHT);
+                    float u = float(i + random.get()) / float(IMAGE_WIDTH);
+                    float v = float(j + random.get()) / float(IMAGE_HEIGHT);
                     Ray r = cam.getRay(u, v);
 
                     // Accumulate the sample
