@@ -7,15 +7,15 @@ namespace rts // for ray tracing series
     class Camera
     {
     public:
-        Camera()
+        Camera(float aspectRatio)
             : origin(0.f, 0.f, 0.f)
-            , lowerLeftCorner(-2.f, -1.f, -1.f)
+            , lowerLeftCorner(-2.f, -2.f/aspectRatio, -1.f)
             , horizontal(4.f, 0.f, 0.f)
-            , vertical(0.f, 2.f, 0.f)
+            , vertical(0.f, 4.f/aspectRatio, 0.f)
         {}
 
-        // Return the ray starting at the camera position and oriented towards the point on the plane corresponding to the given offset
-        // note that the offset is applied from the lower-left corner of the plane
+        // Return the ray starting at the camera position and oriented towards a specific point in space
+        // this point is determined by applying the given offset to the arbitrary position lowerLeftCorner
         Ray getRay(float u, float v) const { return Ray(origin, lowerLeftCorner + u * horizontal + v * vertical - origin); }
 
     private:
