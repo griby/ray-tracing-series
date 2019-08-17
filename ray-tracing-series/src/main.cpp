@@ -1,16 +1,15 @@
 // Ray Tracing in One Weekend Book Series by Peter Shirley
 
-#include <iostream>
 #include <fstream>
-#include <limits>
 
-#include "vec3.h"
+#include "camera.h"
+#include "config.h"
+#include "hitable.h"
+#include "hitableList.h"
+#include "random.h"
 #include "ray.h"
 #include "sphere.h"
-#include "hitableList.h"
-#include "camera.h"
-#include "random.h"
-#include "config.h"
+#include "vec3.h"
 
 namespace rts // for ray tracing series
 {

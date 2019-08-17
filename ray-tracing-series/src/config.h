@@ -1,5 +1,8 @@
 #pragma once
 
+#include <limits>
+#include <string>
+
 namespace rts // for ray tracing series
 {
     // The configuration defines as set in the preprocessor definitions:

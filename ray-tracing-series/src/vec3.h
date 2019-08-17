@@ -1,7 +1,7 @@
 #pragma once
 
-#include <math.h>
 #include <iostream>
+#include <math.h>
 
 namespace rts // for ray tracing series
 {
