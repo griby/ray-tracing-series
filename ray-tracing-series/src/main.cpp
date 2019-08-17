@@ -1,6 +1,8 @@
 // Ray Tracing in One Weekend Book Series by Peter Shirley
 
+#include <chrono>
 #include <fstream>
+#include <iostream>
 
 #include "camera.h"
 #include "config.h"
@@ -63,6 +65,11 @@ int main()
 {
     using namespace rts;
 
+    std::cout << "Ray Tracing in One Weekend Book Series by Peter Shirley" << std::endl;
+
+    // Save the time before ray tracing
+    auto startTime = std::chrono::system_clock::now();
+
     std::ofstream imageFile(IMAGE_FILE_PATH);
     if (imageFile.is_open())
     {
@@ -113,6 +120,11 @@ int main()
 
         imageFile.close();
     }
+
+    // Compute and display the elapsed time
+    auto endTime = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsedSeconds = endTime - startTime;
+    std::cout << "The process took " << elapsedSeconds.count() << "s to complete" << std::endl;
 
     return 0;
 }
