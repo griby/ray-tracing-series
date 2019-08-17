@@ -130,6 +130,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\camera.h" />
+    <ClInclude Include="src\config.h" />
     <ClInclude Include="src\hitable.h" />
     <ClInclude Include="src\hitableList.h" />
     <ClInclude Include="src\random.h" />
