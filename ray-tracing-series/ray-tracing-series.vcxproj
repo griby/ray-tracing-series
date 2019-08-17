@@ -125,7 +125,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\hitableList.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\rayTracer.cpp" />
     <ClCompile Include="src\sphere.cpp" />
   </ItemGroup>
   <ItemGroup>

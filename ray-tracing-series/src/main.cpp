@@ -56,9 +56,10 @@ int main()
     Timer timer;
     timer.setStartTime();
 
-    HitableList<2> world;
-    world[0] = std::move(std::make_unique<Sphere>(vec3(0.f, 0.f, -1.f), 0.5f));         // sphere at the center of the screen
-    world[1] = std::move(std::make_unique<Sphere>(vec3(0.f, -100.5f, -1.f), 100.f));    // sphere representing the ground
+    HitableList world;
+    world.reserve(2);
+    world.push_back(std::make_unique<Sphere>(vec3(0.f, 0.f, -1.f), 0.5f));          // sphere at the center of the screen
+    world.push_back(std::make_unique<Sphere>(vec3(0.f, -100.5f, -1.f), 100.f));     // sphere representing the ground
     Camera camera(IMAGE_ASPECT_RATIO);
 
     std::cout << "Done! (" << timer.getElapsedTime() << ")\n\n";
