@@ -13,26 +13,71 @@
 
 using namespace rts;
 
+
 #define DETERMINISTIC_EXECUTION 1
+#define NORMAL_MAP_COLOR 0
 
 const std::string IMAGE_FILE_PATH = "output/image.ppm";
 
+// Image resolution
 const int IMAGE_WIDTH = 200;
 const int IMAGE_HEIGHT = 100;
 const float IMAGE_ASPECT_RATIO = static_cast<float>(IMAGE_WIDTH) / IMAGE_HEIGHT;
 
-const int SAMPLES_PER_PIXEL = 100; // amount of samples per pixel
+// Sampling per pixel
+const int SAMPLES_PER_PIXEL = 100;
+
+// The shortest and longest ray length
+const float T_MIN = 0.001f;
+const float T_MAX = std::numeric_limits<float>::max();
+
+
+// Initialize the random number generator
+#if DETERMINISTIC_EXECUTION
+    std::mt19937 gen;           // initialize the mersenne twister engine without a seed so that it falls back on a default constant
+#else
+    std::random_device rd;      // create a random device to seed the pseudo-random generator
+    std::mt19937 gen(rd());     // initialize the mersenne twister engine with a random seed (we could also use the clock)
+#endif
+    std::uniform_real_distribution<float> dist(0.f, 1.f); // distribute the results in [0, 1)
+
+
+// Return a random float in [0, 1)
+inline float getRandom()
+{
+    return dist(gen);
+}
+
+vec3 randomPointInUnitSphere()
+{
+    vec3 p;
+    do
+    {
+        // Generate a random point in a unit cube ie its components fall between -1 and +1
+        p = 2.f * vec3(getRandom(), getRandom(), getRandom()) - vec3(1.f, 1.f, 1.f);
+
+        // Until we find one that is contained in the unit sphere
+    } while (p.squaredLength() >= 1.f);
+
+    return p;
+}
 
 template <int N>
 vec3 color(const Ray& r, const HitableList<N>& world)
 {
     // Check if the ray hits a sphere at the center of the screen
     HitRecord rec;
-    if (world.hit(r, 0.f, std::numeric_limits<float>::max(), rec))
+    if (world.hit(r, T_MIN, T_MAX, rec))
     {
+#if NORMAL_MAP_COLOR
         // The normal is a unit vector ie its components fall between -1 and +1
         // map those components between 0 and +1 before returning the value
         return 0.5f * vec3(rec.normal.x() + 1.f, rec.normal.y() + 1.f, rec.normal.z() + 1.f);
+#else
+        // The ray hit a surface, determine a new target to bounce off the surface
+        vec3 target = rec.p + rec.normal + randomPointInUnitSphere();
+        return 0.5f * color(Ray(rec.p, target - rec.p), world);
+#endif
     }
     else
     {
@@ -50,15 +95,6 @@ int main()
     std::ofstream imageFile(IMAGE_FILE_PATH);
     if (imageFile.is_open())
     {
-        // Initialize the random number generator
-#if DETERMINISTIC_EXECUTION
-        std::mt19937 gen;           // initialize the mersenne twister engine without a seed so that it falls back on a default constant
-#else
-        std::random_device rd;      // create a random device to seed the pseudo-random generator
-        std::mt19937 gen(rd());     // initialize the mersenne twister engine with a random seed (we could also use the clock)
-#endif
-        std::uniform_real_distribution<> dist(0.f, 1.f); // distribute the results in [0, 1)
-
         // Write the image file header
         imageFile << "P3" << std::endl;
         imageFile << IMAGE_WIDTH << " " << IMAGE_HEIGHT << std::endl;
@@ -80,8 +116,8 @@ int main()
                 // Sample multiple times randomly within the current pixel
                 for (int s = 0; s < SAMPLES_PER_PIXEL; ++s)
                 {
-                    float u = float(i + dist(gen)) / float(IMAGE_WIDTH);
-                    float v = float(j + dist(gen)) / float(IMAGE_HEIGHT);
+                    float u = float(i + getRandom()) / float(IMAGE_WIDTH);
+                    float v = float(j + getRandom()) / float(IMAGE_HEIGHT);
                     Ray r = cam.getRay(u, v);
 
                     // Accumulate the sample
@@ -90,6 +126,9 @@ int main()
 
                 // Average the color
                 col /= static_cast<float>(SAMPLES_PER_PIXEL);
+
+                // Apply a gamma to brighten the color
+                col = vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
 
                 // Scale the color between 0 and 255
                 int ir = int(255.99f * col[0]);
