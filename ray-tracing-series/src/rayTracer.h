@@ -16,8 +16,11 @@ namespace rts // for ray tracing series
     // Generate a random point in a unit sphere
     vec3 getRandomPointInUnitSphere(Random& random);
 
+    // Compute the reflected vector given a vector and normal
+    vec3 getReflected(const vec3& v, const vec3& n);
+
     // Find the color for the given ray
-    vec3 getColor(const Ray& r, const HitableList& world, Random& random);
+    vec3 getColor(const Ray& r, const HitableList& world, int depth, Random& random);
 
     // Declare aliases for the image data
     using Color = std::tuple<int, int, int>;

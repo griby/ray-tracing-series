@@ -4,6 +4,7 @@
 
 namespace rts // for ray tracing series
 {
+    class Material;
     class Ray;
 
     struct HitRecord
@@ -11,6 +12,7 @@ namespace rts // for ray tracing series
         float t;
         vec3 p;
         vec3 normal;
+        const Material* matPtr;
     };
 
     class Hitable

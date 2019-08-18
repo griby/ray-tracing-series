@@ -1,5 +1,6 @@
 #include "rayTracer.h"
 
+#include <assert.h>
 #include <future>
 #include <mutex>
 #include <utility>
@@ -9,6 +10,7 @@
 #include "config.h"
 #include "hitable.h"
 #include "hitableList.h"
+#include "material.h"
 #include "random.h"
 #include "ray.h"
 
@@ -28,7 +30,13 @@ namespace rts
         return p;
     }
 
-    vec3 getColor(const Ray& r, const HitableList& world, Random& random)
+    vec3 getReflected(const vec3& v, const vec3& n)
+    {
+        // Compute the reflected vector as described in chapter 8
+        return v - 2 * dot(v, n) * n;
+    }
+
+    vec3 getColor(const Ray& r, const HitableList& world, int depth, Random& random)
     {
         // Check if the ray hits any object
         HitRecord rec;
@@ -38,10 +46,26 @@ namespace rts
             // The normal is a unit vector ie its components fall between -1 and +1
             // map those components between 0 and +1 before returning the value
             return 0.5f * vec3(rec.normal.x() + 1.f, rec.normal.y() + 1.f, rec.normal.z() + 1.f);
-#else
+#elif IGNORE_MATERIALS
             // The ray hit a surface, determine a new target to bounce off the surface
             vec3 target = rec.p + rec.normal + getRandomPointInUnitSphere(random);
-            return 0.5f * getColor(Ray(rec.p, target - rec.p), world, random);
+            return 0.5f * getColor(Ray(rec.p, target - rec.p), world, depth + 1, random);
+#else
+            // The surface must have a material
+            assert(rec.matPtr != nullptr);
+            
+            Ray scattered;
+            vec3 attenuation;
+
+            // The ray hit a surface, get the attenuation and scattered information from its material
+            if (depth < 50 && rec.matPtr->scatter(r, rec, attenuation, scattered, random))
+            {
+                return attenuation * getColor(scattered, world, depth + 1, random);
+            }
+            else
+            {
+                return vec3(0.f, 0.f, 0.f);
+            }
 #endif // NORMAL_MAP_COLOR
         }
         else
@@ -94,7 +118,7 @@ namespace rts
                     Ray r = camera.getRay(u, v);
 
                     // Accumulate the sample
-                    col += getColor(r, world, random);
+                    col += getColor(r, world, 0, random);
                 }
 
                 // Average the color

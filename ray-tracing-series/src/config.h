@@ -7,10 +7,11 @@ namespace rts // for ray tracing series
 {
     // The following configuration defines can be set in the preprocessor definitions:
     // Project Properties > C/C++ > Preprocessor > Preprocessor Definitions
-    //  * THREADING_ON = [0|1]
+    //  * THREADING_ON      = [0|1]
     //  * DETERMINISTIC_RNG = [0|1]
-    //  * NORMAL_MAP_COLOR = [0|1]
-    //  * RAY_TRACING_LOG = [0|1]
+    //  * NORMAL_MAP_COLOR  = [0|1]
+    //  * IGNORE_MATERIALS  = [0|1]
+    //  * RAY_TRACING_LOG   = [0|1]
 
     // Image output path
     const std::string IMAGE_FILE_PATH = "output/image.ppm";

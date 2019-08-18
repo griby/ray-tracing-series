@@ -76,7 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>DETERMINISTIC_RNG=1;NORMAL_MAP_COLOR=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>THREADING_ON=0;DETERMINISTIC_RNG=1;NORMAL_MAP_COLOR=0;IGNORE_MATERIALS=0;RAY_TRACING_LOG=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -101,7 +101,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>THREADING_ON=1;DETERMINISTIC_RNG=1;NORMAL_MAP_COLOR=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>THREADING_ON=1;DETERMINISTIC_RNG=1;NORMAL_MAP_COLOR=0;IGNORE_MATERIALS=0;RAY_TRACING_LOG=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,7 +126,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\hitableList.cpp" />
+    <ClCompile Include="src\lambertian.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\metal.cpp" />
     <ClCompile Include="src\rayTracer.cpp" />
     <ClCompile Include="src\sphere.cpp" />
   </ItemGroup>
@@ -135,6 +137,9 @@
     <ClInclude Include="src\config.h" />
     <ClInclude Include="src\hitable.h" />
     <ClInclude Include="src\hitableList.h" />
+    <ClInclude Include="src\lambertian.h" />
+    <ClInclude Include="src\material.h" />
+    <ClInclude Include="src\metal.h" />
     <ClInclude Include="src\random.h" />
     <ClInclude Include="src\ray.h" />
     <ClInclude Include="src\rayTracer.h" />

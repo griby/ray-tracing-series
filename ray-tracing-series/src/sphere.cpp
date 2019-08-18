@@ -24,7 +24,7 @@ namespace rts
             float t = (-b - discriminantSqrt) / a;
             if (tMin < t && t < tMax)
             {
-                setHitRecord(rec, t, r);
+                setHitRecord(rec, t, r, material.get());
                 return true;
             }
 
@@ -32,7 +32,7 @@ namespace rts
             t = (-b + discriminantSqrt) / a;
             if (tMin < t && t < tMax)
             {
-                setHitRecord(rec, t, r);
+                setHitRecord(rec, t, r, material.get());
                 return true;
             }
         }
@@ -40,11 +40,12 @@ namespace rts
         return false;
     }
 
-    void Sphere::setHitRecord(HitRecord& rec, float t, const Ray& r) const
+    void Sphere::setHitRecord(HitRecord& rec, float t, const Ray& r, const Material* material) const
     {
         rec.t = t;
         rec.p = r.pointAtParameter(rec.t);
         rec.normal = (rec.p - center) / radius;
+        rec.matPtr = material;
     }
 
     // Previous hitSphere function which has been replaced by the Sphere:hit method (see above)

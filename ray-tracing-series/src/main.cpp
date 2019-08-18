@@ -9,8 +9,9 @@
 
 #include "camera.h"
 #include "config.h"
-#include "hitable.h"
 #include "hitableList.h"
+#include "lambertian.h"
+#include "metal.h"
 #include "rayTracer.h"
 #include "sphere.h"
 #include "timer.h"
@@ -59,9 +60,11 @@ int main()
     stepTimer.setStartTime();
 
     HitableList world;
-    world.reserve(2);
-    world.push_back(std::make_unique<Sphere>(vec3(0.f, 0.f, -1.f), 0.5f));          // sphere at the center of the screen
-    world.push_back(std::make_unique<Sphere>(vec3(0.f, -100.5f, -1.f), 100.f));     // sphere representing the ground
+    world.reserve(4);
+    world.push_back(std::make_unique<Sphere>(vec3(0.f, 0.f, -1.f), 0.5f, std::make_shared<Lambertian>(vec3(0.8f, 0.3f, 0.3f))));        // diffuse sphere at the center of the screen
+    world.push_back(std::make_unique<Sphere>(vec3(0.f, -100.5f, -1.f), 100.f, std::make_shared<Lambertian>(vec3(0.8f, 0.8f, 0.f))));    // diffuse sphere representing the ground
+    world.push_back(std::make_unique<Sphere>(vec3(1.f, 0.f, -1.f), 0.5f, std::make_shared<Metal>(vec3(0.8f, 0.6f, 0.2f), 0.3f)));       // one metallic sphere on each side of the diffuse one
+    world.push_back(std::make_unique<Sphere>(vec3(-1.f, 0.f, -1.f), 0.5f, std::make_shared<Metal>(vec3(0.8f, 0.8f, 0.8f), 1.f)));
     Camera camera(IMAGE_ASPECT_RATIO);
 
     std::cout << "Done! (" << stepTimer.getElapsedTime() << "s)\n\n";
