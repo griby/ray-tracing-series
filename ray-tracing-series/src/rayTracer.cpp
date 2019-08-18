@@ -42,7 +42,7 @@ namespace rts
             // The ray hit a surface, determine a new target to bounce off the surface
             vec3 target = rec.p + rec.normal + getRandomPointInUnitSphere(random);
             return 0.5f * getColor(Ray(rec.p, target - rec.p), world, random);
-#endif
+#endif // NORMAL_MAP_COLOR
         }
         else
         {
@@ -58,7 +58,7 @@ namespace rts
 #if RAY_TRACING_LOG
     // Mutex used to display debug logs
     static std::mutex ioMutex;
-#endif
+#endif // RAY_TRACING_LOG
 
     void rayTracingSubTask(const Camera& camera, const HitableList& world, ImageData* imageData, int startLine, int endLine, int taskId)
     {
@@ -68,7 +68,7 @@ namespace rts
             std::lock_guard<std::mutex> lock(ioMutex);
             std::cout << "    START | RT sub task ID[" << taskId << "] to update lines in the range [" << startLine << ", " << endLine << ")" << std::endl;
         }
-#endif
+#endif // RAY_TRACING_LOG
 
         // Initialize a random value generator for this specific sub task
         // give it a unique seed based on the taskId
@@ -76,7 +76,7 @@ namespace rts
         Random random(taskId);
 #else
         Random random;
-#endif
+#endif // THREADING_ON
 
         // Run the ray tracer on each pixel in the range [startLine, endLine) to determine its color
         // from left to right and bottom to top
@@ -135,7 +135,7 @@ namespace rts
                 std::lock_guard<std::mutex> lock(ioMutex);
                 std::cout << "  CREATE | RT sub task ID[" << taskId << "] to update the range [" << startLine << ", " << endLine << ")" << std::endl;
             }
-#endif
+#endif // RAY_TRACING_LOG
             
             // Create the async sub task
             auto subTask = std::async(std::launch::async,
@@ -148,6 +148,6 @@ namespace rts
 #else
         // Multithreading is disabled, just call the function directly to update the entire image
         rayTracingSubTask(camera, world, imageData, 0, IMAGE_HEIGHT, -1);
-#endif
+#endif // THREADING_ON
     }
 }

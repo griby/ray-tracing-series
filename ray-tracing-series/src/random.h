@@ -13,12 +13,12 @@ namespace rts // for ray tracing series
 #if DETERMINISTIC_RNG
             // initialize the mersenne twister engine with a constant
             , gen((customSeed != DEFAULT_SEED) ? customSeed + DEFAULT_SEED : DEFAULT_SEED)
-#endif
+#endif // DETERMINISTIC_RNG
         {
 #if !DETERMINISTIC_RNG
             std::random_device rd;                  // create a random device to seed the pseudo-random generator
             gen = std::mt19937(customSeed + rd());  // initialize the mersenne twister engine with a random seed (we could also use the clock)
-#endif
+#endif // !DETERMINISTIC_RNG
         }
 
         // Return a random float in [0, 1)
