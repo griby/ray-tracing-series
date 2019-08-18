@@ -8,15 +8,16 @@ namespace rts // for ray tracing series
     {
     public:
         // Initialize the random number generator
-        Random()
-            : dist(0.f, 1.f)    // distribute the results in [0, 1)
-#if DETERMINISTIC_EXECUTION
-            , gen()             // initialize the mersenne twister engine without a seed so that it falls back on a default constant
+        Random(unsigned int customSeed = DEFAULT_SEED)
+            : dist(0.f, 1.f) // distribute the results in [0, 1)
+#if DETERMINISTIC_RNG
+            // initialize the mersenne twister engine with a constant
+            , gen((customSeed != DEFAULT_SEED) ? customSeed + DEFAULT_SEED : DEFAULT_SEED)
 #endif
         {
-#if !DETERMINISTIC_EXECUTION
-            std::random_device rd;      // create a random device to seed the pseudo-random generator
-            gen = std::mt19937(rd());   // initialize the mersenne twister engine with a random seed (we could also use the clock)
+#if !DETERMINISTIC_RNG
+            std::random_device rd;                  // create a random device to seed the pseudo-random generator
+            gen = std::mt19937(customSeed + rd());  // initialize the mersenne twister engine with a random seed (we could also use the clock)
 #endif
         }
 
@@ -26,5 +27,7 @@ namespace rts // for ray tracing series
     private:
         std::uniform_real_distribution<float> dist;
         std::mt19937 gen;
+
+        static const unsigned int DEFAULT_SEED = std::mt19937::default_seed;
     };
 }

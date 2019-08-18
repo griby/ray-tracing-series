@@ -70,9 +70,13 @@ namespace rts
         }
 #endif
 
-        // TODO At the moment all the sub tasks start with the same default seed. Change it based on startLine/endLine/taskId
         // Initialize a random value generator for this specific sub task
+        // give it a unique seed based on the taskId
+#if THREADING_ON
+        Random random(taskId);
+#else
         Random random;
+#endif
 
         // Run the ray tracer on each pixel in the range [startLine, endLine) to determine its color
         // from left to right and bottom to top
