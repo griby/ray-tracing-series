@@ -1,6 +1,12 @@
 #include "rayTracer.h"
 
+#include <future>
+#include <mutex>
+#include <utility>
+#include <vector>
+
 #include "camera.h"
+#include "config.h"
 #include "hitable.h"
 #include "hitableList.h"
 #include "random.h"
@@ -8,10 +14,7 @@
 
 namespace rts
 {
-    // Initialize a global random value generator
-    Random random;
-
-    vec3 getRandomPointInUnitSphere()
+    vec3 getRandomPointInUnitSphere(Random& random)
     {
         vec3 p;
         do
@@ -25,7 +28,7 @@ namespace rts
         return p;
     }
 
-    vec3 getColor(const Ray& r, const HitableList& world)
+    vec3 getColor(const Ray& r, const HitableList& world, Random& random)
     {
         // Check if the ray hits any object
         HitRecord rec;
@@ -37,8 +40,8 @@ namespace rts
             return 0.5f * vec3(rec.normal.x() + 1.f, rec.normal.y() + 1.f, rec.normal.z() + 1.f);
 #else
             // The ray hit a surface, determine a new target to bounce off the surface
-            vec3 target = rec.p + rec.normal + getRandomPointInUnitSphere();
-            return 0.5f * getColor(Ray(rec.p, target - rec.p), world);
+            vec3 target = rec.p + rec.normal + getRandomPointInUnitSphere(random);
+            return 0.5f * getColor(Ray(rec.p, target - rec.p), world, random);
 #endif
         }
         else
@@ -52,11 +55,28 @@ namespace rts
         }
     }
 
-    void performRayTracing(const Camera& camera, const HitableList& world, ImageData* imageData)
+#if RAY_TRACING_LOG
+    // Mutex used to display debug logs
+    static std::mutex ioMutex;
+#endif
+
+    void rayTracingSubTask(const Camera& camera, const HitableList& world, ImageData* imageData, int startLine, int endLine, int taskId)
     {
-        // Run the ray tracer on each pixel to determine its color
-        // from left to right and top to bottom
-        for (int j = IMAGE_HEIGHT - 1; j >= 0; --j)
+#if RAY_TRACING_LOG
+        // Display some debug log
+        {
+            std::lock_guard<std::mutex> lock(ioMutex);
+            std::cout << "    START | RT sub task ID[" << taskId << "] to update lines in the range [" << startLine << ", " << endLine << ")" << std::endl;
+        }
+#endif
+
+        // TODO At the moment all the sub tasks start with the same default seed. Change it based on startLine/endLine/taskId
+        // Initialize a random value generator for this specific sub task
+        Random random;
+
+        // Run the ray tracer on each pixel in the range [startLine, endLine) to determine its color
+        // from left to right and bottom to top
+        for (int j = startLine; j < endLine; ++j)
         {
             for (int i = 0; i < IMAGE_WIDTH; ++i)
             {
@@ -70,7 +90,7 @@ namespace rts
                     Ray r = camera.getRay(u, v);
 
                     // Accumulate the sample
-                    col += getColor(r, world);
+                    col += getColor(r, world, random);
                 }
 
                 // Average the color
@@ -88,5 +108,42 @@ namespace rts
                 (*imageData)[i + j * IMAGE_WIDTH] = std::make_tuple(ir, ig, ib);
             }
         }
+    }
+
+    void rayTracingMainTask(const Camera& camera, const HitableList& world, ImageData* imageData)
+    {
+#if THREADING_ON
+        std::vector<std::future<void>> subTaskFutures;
+
+        // The number of lines that each task will take care of
+        int linesPerTask = IMAGE_HEIGHT / NUMBER_OF_TASKS;
+
+        // Initialize each of the tasks
+        for (int taskId = 0; taskId < NUMBER_OF_TASKS; ++taskId)
+        {
+            // The last task takes care of whatever is left
+            int startLine = taskId * linesPerTask;
+            int endLine = (taskId == NUMBER_OF_TASKS - 1) ? IMAGE_HEIGHT : startLine + linesPerTask;
+
+#if RAY_TRACING_LOG
+            // Display some debug log
+            {
+                std::lock_guard<std::mutex> lock(ioMutex);
+                std::cout << "  CREATE | RT sub task ID[" << taskId << "] to update the range [" << startLine << ", " << endLine << ")" << std::endl;
+            }
+#endif
+            
+            // Create the async sub task
+            auto subTask = std::async(std::launch::async,
+                [&, startLine, endLine, taskId]() { rayTracingSubTask(camera, world, imageData, startLine, endLine, taskId); });
+            
+            // Store it in a vector
+            subTaskFutures.push_back(std::move(subTask));
+        }
+        // Leaving the scope will destroy the vector, which will in turn wait for the sub tasks to complete before destroying those
+#else
+        // Multithreading is disabled, just call the function directly to update the entire image
+        rayTracingSubTask(camera, world, imageData, 0, IMAGE_HEIGHT, -1);
+#endif
     }
 }

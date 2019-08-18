@@ -50,11 +50,13 @@ int main()
     using namespace rts;
 
     std::cout << "Ray Tracing in One Weekend Book Series by Peter Shirley\n\n";
+    Timer globalTimer;
+    globalTimer.setStartTime();
 
     ////////////////////////////////////////////////////////////////////////////////
     std::cout << "Setting up the world..." << std::endl;
-    Timer timer;
-    timer.setStartTime();
+    Timer stepTimer;
+    stepTimer.setStartTime();
 
     HitableList world;
     world.reserve(2);
@@ -62,34 +64,35 @@ int main()
     world.push_back(std::make_unique<Sphere>(vec3(0.f, -100.5f, -1.f), 100.f));     // sphere representing the ground
     Camera camera(IMAGE_ASPECT_RATIO);
 
-    std::cout << "Done! (" << timer.getElapsedTime() << ")\n\n";
+    std::cout << "Done! (" << stepTimer.getElapsedTime() << "s)\n\n";
 
     ////////////////////////////////////////////////////////////////////////////////
-    std::cout << "Performing ray tracing";
-    timer.setStartTime();
+    std::cout << "Performing ray tracing..." << std::endl;
+    stepTimer.setStartTime();
 
     auto imageData = std::make_unique<ImageData>();
-    auto rayTracingTask = std::async(std::launch::async, [&]() { performRayTracing(camera, world, imageData.get()); });
+    auto mainTask = std::async(std::launch::async,
+        [&]() { rayTracingMainTask(camera, world, imageData.get()); });
 
-    // Check periodically if the task is completed
-    while (rayTracingTask.wait_for(std::chrono::milliseconds(500)) != std::future_status::ready)
+    // Check periodically if the main task is completed
+    while (mainTask.wait_for(std::chrono::milliseconds(500)) != std::future_status::ready)
     {
         std::cout << ".";
     }
     std::cout << std::endl;
 
-    std::cout << "Done! (" << timer.getElapsedTime() << ")\n\n";
+    std::cout << "Done! (" << stepTimer.getElapsedTime() << "s)\n\n";
 
     ////////////////////////////////////////////////////////////////////////////////
     std::cout << "Writing the image file..." << std::endl;
-    timer.setStartTime();
+    stepTimer.setStartTime();
 
     writeImageFile(imageData.get());
 
-    std::cout << "Done! (" << timer.getElapsedTime() << ")\n\n";
+    std::cout << "Done! (" << stepTimer.getElapsedTime() << "s)\n\n";
 
     ////////////////////////////////////////////////////////////////////////////////
-    std::cout << "All done!" << std::endl;
+    std::cout << "All done! (" << globalTimer.getElapsedTime() << "s)" << std::endl;
 
     return 0;
 }
