@@ -1,5 +1,7 @@
 #include "sphere.h"
 
+#include "ray.h"
+
 namespace rts
 {
     bool Sphere::hit(const Ray& r, float tMin, float tMax, HitRecord& rec) const

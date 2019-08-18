@@ -1,9 +1,11 @@
 #pragma once
 
-#include "ray.h"
+#include "vec3.h"
 
 namespace rts // for ray tracing series
 {
+    class Ray;
+
     struct HitRecord
     {
         float t;
