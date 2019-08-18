@@ -19,6 +19,15 @@
 
 namespace rts // for ray tracing series
 {
+    void populateWorld(HitableList& world)
+    {
+        world.reserve(4);
+        world.push_back(std::make_unique<Sphere>(vec3(0.f, 0.f, -1.f), 0.5f, std::make_shared<Lambertian>(vec3(0.8f, 0.3f, 0.3f))));        // diffuse sphere at the center of the screen
+        world.push_back(std::make_unique<Sphere>(vec3(0.f, -100.5f, -1.f), 100.f, std::make_shared<Lambertian>(vec3(0.8f, 0.8f, 0.f))));    // diffuse sphere representing the ground
+        world.push_back(std::make_unique<Sphere>(vec3(1.f, 0.f, -1.f), 0.5f, std::make_shared<Metal>(vec3(0.8f, 0.6f, 0.2f), 0.3f)));       // one metallic sphere on each side of the diffuse one
+        world.push_back(std::make_unique<Sphere>(vec3(-1.f, 0.f, -1.f), 0.5f, std::make_shared<Metal>(vec3(0.8f, 0.8f, 0.8f), 1.f)));
+    }
+
     void writeImageFile(const ImageData* imageData)
     {
         // Write the ray tracer output to the image file
@@ -60,11 +69,7 @@ int main()
     stepTimer.setStartTime();
 
     HitableList world;
-    world.reserve(4);
-    world.push_back(std::make_unique<Sphere>(vec3(0.f, 0.f, -1.f), 0.5f, std::make_shared<Lambertian>(vec3(0.8f, 0.3f, 0.3f))));        // diffuse sphere at the center of the screen
-    world.push_back(std::make_unique<Sphere>(vec3(0.f, -100.5f, -1.f), 100.f, std::make_shared<Lambertian>(vec3(0.8f, 0.8f, 0.f))));    // diffuse sphere representing the ground
-    world.push_back(std::make_unique<Sphere>(vec3(1.f, 0.f, -1.f), 0.5f, std::make_shared<Metal>(vec3(0.8f, 0.6f, 0.2f), 0.3f)));       // one metallic sphere on each side of the diffuse one
-    world.push_back(std::make_unique<Sphere>(vec3(-1.f, 0.f, -1.f), 0.5f, std::make_shared<Metal>(vec3(0.8f, 0.8f, 0.8f), 1.f)));
+    populateWorld(world);
     Camera camera(IMAGE_ASPECT_RATIO);
 
     std::cout << "Done! (" << stepTimer.getElapsedTime() << "s)\n\n";
@@ -73,6 +78,7 @@ int main()
     std::cout << "Performing ray tracing..." << std::endl;
     stepTimer.setStartTime();
 
+    // Start the ray tracing main task
     auto imageData = std::make_unique<ImageData>();
     auto mainTask = std::async(std::launch::async,
         [&]() { rayTracingMainTask(camera, world, imageData.get()); });
