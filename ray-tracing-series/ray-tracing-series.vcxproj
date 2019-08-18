@@ -76,7 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>THREADING_ON=0;DETERMINISTIC_RNG=1;NORMAL_MAP_COLOR=0;IGNORE_MATERIALS=0;RAY_TRACING_LOG=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>THREADING_ON=0;DETERMINISTIC_RNG=1;NORMAL_MAP_COLOR=0;IGNORE_MATERIALS=0;GRAYSCALE_COLOR=0;RAY_TRACING_LOG=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -101,7 +101,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>THREADING_ON=1;DETERMINISTIC_RNG=1;NORMAL_MAP_COLOR=0;IGNORE_MATERIALS=0;RAY_TRACING_LOG=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>THREADING_ON=1;DETERMINISTIC_RNG=1;NORMAL_MAP_COLOR=0;IGNORE_MATERIALS=0;GRAYSCALE_COLOR=0;RAY_TRACING_LOG=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

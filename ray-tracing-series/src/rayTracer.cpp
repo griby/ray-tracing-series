@@ -124,6 +124,19 @@ namespace rts
                 // Average the color
                 col /= static_cast<float>(SAMPLES_PER_PIXEL);
 
+#if GRAYSCALE_COLOR
+                // Colorimetric conversion to grayscale https://en.wikipedia.org/wiki/Grayscale
+                // apply it before gamma correction
+                float lum = 0.2126f * col[0] + 0.7152f * col[1] + 0.0722f * col[2]; // compute the luminance
+
+                // Apply a gamma to brighten the color
+                lum = sqrt(lum);
+
+                // Scale the color between 0 and 255
+                int il = int(255.99f * lum);
+
+                auto finalColor = std::make_tuple(il, il, il);
+#else
                 // Apply a gamma to brighten the color
                 col = vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
 
@@ -132,8 +145,11 @@ namespace rts
                 int ig = int(255.99f * col[1]);
                 int ib = int(255.99f * col[2]);
 
+                auto finalColor = std::make_tuple(ir, ig, ib);
+#endif // GRAYSCALE_COLOR
+
                 // Store the resulting color in the array
-                (*imageData)[i + j * IMAGE_WIDTH] = std::make_tuple(ir, ig, ib);
+                (*imageData)[i + j * IMAGE_WIDTH] = finalColor;
             }
         }
     }

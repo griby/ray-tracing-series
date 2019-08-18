@@ -11,6 +11,7 @@ namespace rts // for ray tracing series
     //  * DETERMINISTIC_RNG = [0|1]
     //  * NORMAL_MAP_COLOR  = [0|1]
     //  * IGNORE_MATERIALS  = [0|1]
+    //  * GRAYSCALE_COLOR   = [0|1]
     //  * RAY_TRACING_LOG   = [0|1]
 
     // Image output path
