@@ -1,5 +1,7 @@
 #include "sphere.h"
 
+#include <cmath>
+
 #include "ray.h"
 
 namespace rts
