@@ -22,7 +22,7 @@ namespace rts // for ray tracing series
         inline float b() const { return e[2]; }
 
         inline const vec3& operator+() const { return *this; }
-        inline vec3 operator-() const { return vec3(e[0], e[1], e[2]); }
+        inline vec3 operator-() const { return vec3(-e[0], -e[1], -e[2]); }
         inline float operator[](int i) const { return e[i]; }
         inline float& operator[](int i) { return e[i]; }
 
