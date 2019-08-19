@@ -1,6 +1,7 @@
 #include "rayTracer.h"
 
 #include <assert.h>
+#include <cmath>
 #include <future>
 #include <mutex>
 #include <utility>
@@ -36,6 +37,26 @@ namespace rts
         return v - 2 * dot(v, n) * n;
     }
 
+    // TODO Add more information from http://psgraphics.blogspot.com/2015/06/ray-tracing-refraction.html
+    bool getRefracted(const vec3& v, const vec3& n, float niOverNt, vec3& refracted)
+    {
+        vec3 uv = unitVector(v);
+        float dt = dot(uv, n);
+        float discriminant = 1.f - niOverNt * niOverNt * (1.f - dt * dt);
+        if (discriminant > 0.f)
+        {
+            refracted = niOverNt * (uv - n * dt) - n * sqrt(discriminant);
+            return true;
+        }
+        return false;
+    }
+
+    float getSchlick(float cosine, float refIdx)
+    {
+        float r0 = pow((1.f - refIdx) / (1.f + refIdx), 2.f);
+        return r0 + (1.f - r0) * pow(1.f - cosine, 5.f);
+    }
+
     vec3 getColor(const Ray& r, const HitableList& world, int depth, Random& random)
     {
         // Check if the ray hits any object
@@ -64,6 +85,9 @@ namespace rts
             }
             else
             {
+                // TODO This ray shouldn't contribute to the overall pixel's color
+                // have the getColor function return a boolean and the color passed-by-ref instead
+                // and just ignore the result in the ray tracing sub task when it's false
                 return vec3(0.f, 0.f, 0.f);
             }
 #endif // NORMAL_MAP_COLOR

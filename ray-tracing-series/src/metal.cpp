@@ -17,6 +17,6 @@ namespace rts
 
         // Due to the fuzz factor or grazing rays we may scatter below the surface
         // in that case absorb the scattered ray by returning false
-        return dot(scattered.direction(), rec.normal) > 0;
+        return dot(scattered.direction(), rec.normal) > 0.f;
     }
 }

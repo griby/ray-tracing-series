@@ -15,7 +15,7 @@ namespace rts
         float discriminant = b * b - a * c;
 
         // There's 2 real solutions to the quadratic equation
-        if (discriminant > 0)
+        if (discriminant > 0.f)
         {
             float discriminantSqrt = sqrt(discriminant);
 
