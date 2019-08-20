@@ -80,7 +80,7 @@ namespace rts
             // The ray hit a surface, determine a new target to bounce off of it
             // also check the depth to avoid infinite recursions, it can happen with spheres of negative radius
             // rays end up being trapped inside and there's no refraction possible since we ignore the material
-            if (depth < 50)
+            if (depth < RAY_MAX_DEPTH)
             {
                 vec3 target = rec.p + rec.normal + getRandomPointInUnitSphere(random);
                 return 0.5f * getColor(Ray(rec.p, target - rec.p), world, depth + 1, random);
@@ -100,7 +100,7 @@ namespace rts
             vec3 attenuation;
 
             // The ray hit a surface, get the attenuation and scattered information from its material
-            if (depth < 50 && rec.matPtr->scatter(r, rec, attenuation, scattered, random))
+            if (depth < RAY_MAX_DEPTH && rec.matPtr->scatter(r, rec, attenuation, scattered, random))
             {
                 return attenuation * getColor(scattered, world, depth + 1, random);
             }
@@ -156,7 +156,7 @@ namespace rts
                 vec3 col(0.f, 0.f, 0.f); // the accumulated color
 
                 // Sample multiple times randomly within the current pixel
-                for (int s = 0; s < SAMPLES_PER_PIXEL; ++s)
+                for (int s = 0; s < RAY_COUNT_PER_PIXEL; ++s)
                 {
                     float u = float(i + random.get()) / float(IMAGE_WIDTH);
                     float v = float(j + random.get()) / float(IMAGE_HEIGHT);
@@ -167,7 +167,7 @@ namespace rts
                 }
 
                 // Average the color
-                col /= static_cast<float>(SAMPLES_PER_PIXEL);
+                col /= static_cast<float>(RAY_COUNT_PER_PIXEL);
 
 #ifdef RENDER_GRAYSCALE
                 // Colorimetric conversion to grayscale https://en.wikipedia.org/wiki/Grayscale
@@ -205,14 +205,14 @@ namespace rts
         std::vector<std::future<void>> subTaskFutures;
 
         // The number of lines that each task will take care of
-        int linesPerTask = IMAGE_HEIGHT / NUMBER_OF_TASKS;
+        int linesPerTask = IMAGE_HEIGHT / SUBTASK_COUNT;
 
         // Initialize each of the tasks
-        for (int taskId = 0; taskId < NUMBER_OF_TASKS; ++taskId)
+        for (int taskId = 0; taskId < SUBTASK_COUNT; ++taskId)
         {
             // The last task takes care of whatever is left
             int startLine = taskId * linesPerTask;
-            int endLine = (taskId == NUMBER_OF_TASKS - 1) ? IMAGE_HEIGHT : startLine + linesPerTask;
+            int endLine = (taskId == SUBTASK_COUNT - 1) ? IMAGE_HEIGHT : startLine + linesPerTask;
 
 #ifdef MULTITHREADING_LOGS
             // Display some debug log
