@@ -10,10 +10,10 @@ namespace rts
     {
         // Compute the discriminant as described in the comments at the end of this file
         // Note that a bunch of redundant "times 2" factors have been removed
-        vec3 oc = r.origin() - center;
+        vec3 oc = r.origin() - m_center;
         float a = dot(r.direction(), r.direction());
         float b = dot(oc, r.direction());
-        float c = dot(oc, oc) - radius * radius;
+        float c = dot(oc, oc) - m_radius * m_radius;
         float discriminant = b * b - a * c;
 
         // There's 2 real solutions to the quadratic equation
@@ -26,7 +26,7 @@ namespace rts
             float t = (-b - discriminantSqrt) / a;
             if (tMin < t && t < tMax)
             {
-                setHitRecord(rec, t, r, material.get());
+                setHitRecord(rec, t, r, m_material.get());
                 return true;
             }
 
@@ -34,7 +34,7 @@ namespace rts
             t = (-b + discriminantSqrt) / a;
             if (tMin < t && t < tMax)
             {
-                setHitRecord(rec, t, r, material.get());
+                setHitRecord(rec, t, r, m_material.get());
                 return true;
             }
         }
@@ -46,7 +46,7 @@ namespace rts
     {
         rec.t = t;
         rec.p = r.pointAtParameter(rec.t);
-        rec.normal = (rec.p - center) / radius;
+        rec.normal = (rec.p - m_center) / m_radius;
         rec.matPtr = material;
     }
 
