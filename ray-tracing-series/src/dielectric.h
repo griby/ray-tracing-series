@@ -12,6 +12,6 @@ namespace rts // for ray tracing series
         virtual bool scatter(const Ray& rIn, const HitRecord& rec, vec3& attenuation, Ray& scattered, Random& random) const;
 
     private:
-        float m_refIdx;
+        float m_refIdx; // the refraction index
     };
 }
