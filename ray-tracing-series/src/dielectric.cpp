@@ -23,26 +23,26 @@ namespace rts
         // Dielectric scattering...
         attenuation = vec3(1.f, 1.f, 1.f); // TODO could be a member of the Dielectric class to affect its tint
 
-        // Determine the outward normal and the refraction ratio
+        // Determine the outward normal and the refraction indexes ratio
         vec3 outwardNormal;
-        float niOverNt;
+        float refIdxRatio;
         float cosine;
         float dt = dot(rIn.direction(), rec.normal);
         if (dt > 0.f)
         {
             outwardNormal = -rec.normal;
-            niOverNt = m_refIdx;
+            refIdxRatio = m_refIdx;
         }
         else
         {
             outwardNormal = rec.normal;
-            niOverNt = 1.f / m_refIdx;
+            refIdxRatio = 1.f / m_refIdx;
         }
 
         // Determine the reflection probability
         vec3 refracted;
         float reflectProb = 1.f;
-        if (getRefracted(rIn.direction(), outwardNormal, niOverNt, refracted))
+        if (getRefracted(rIn.direction(), outwardNormal, refIdxRatio, refracted))
         {
             // Compute cosine here, where it's needed
             if (dt > 0.f)
