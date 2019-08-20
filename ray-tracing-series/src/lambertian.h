@@ -10,7 +10,7 @@ namespace rts // for ray tracing series
     public:
         Lambertian(const vec3& albedo) : m_albedo(albedo) {}
 
-        virtual bool scatter(const Ray& rIn, const HitRecord& rec, vec3& attenuation, Ray& scattered, Random& random) const;
+        virtual bool scatter(const Ray& rIn, const HitRecord& rec, vec3& attenuation, Ray& scattered, Random& random) const override;
 
     private:
         vec3 m_albedo;

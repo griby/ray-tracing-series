@@ -17,7 +17,7 @@ namespace rts // for ray tracing series
         {
         }
 
-        virtual bool hit(const Ray& r, float tMin, float tMax, HitRecord& rec) const;
+        virtual bool hit(const Ray& r, float tMin, float tMax, HitRecord& rec) const override;
 
     private:
         inline void setHitRecord(HitRecord& rec, float t, const Ray& r, const Material* material) const;

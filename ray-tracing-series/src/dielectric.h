@@ -9,7 +9,7 @@ namespace rts // for ray tracing series
     public:
         Dielectric(float refIdx) : m_refIdx(refIdx) {}
 
-        virtual bool scatter(const Ray& rIn, const HitRecord& rec, vec3& attenuation, Ray& scattered, Random& random) const;
+        virtual bool scatter(const Ray& rIn, const HitRecord& rec, vec3& attenuation, Ray& scattered, Random& random) const override;
 
     private:
         float m_refIdx; // the refraction index
