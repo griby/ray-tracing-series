@@ -39,7 +39,7 @@ namespace rts // for ray tracing series
 
     // Declare aliases for the image data
     using Color = std::tuple<int, int, int>;
-    using ImageData = std::array<Color, IMAGE_WIDTH* IMAGE_HEIGHT>;
+    using ImageData = std::array<Color, IMAGE_WIDTH * IMAGE_HEIGHT>;
 
     // The ray tracing sub task which takes care of updating the image lines in the range [startLine, endLine)
     void rayTracingSubTask(const Camera& camera, const HitableList& world, ImageData* imageData, int startLine, int endLine, int taskId);
