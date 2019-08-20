@@ -22,12 +22,17 @@ namespace rts // for ray tracing series
 {
     void populateWorld(HitableList& world)
     {
+        auto lambertianMat1 = std::make_shared<Lambertian>(vec3(0.8f, 0.3f, 0.3f));
+        auto lambertianMat2 = std::make_shared<Lambertian>(vec3(0.8f, 0.8f, 0.f));
+        auto metallicMat = std::make_shared<Metal>(vec3(0.8f, 0.6f, 0.2f), 0.3f);
+        auto dielectricMat = std::make_shared<Dielectric>(1.5f);
+
         world.reserve(5);
-        world.add(std::make_unique<Sphere>(vec3(0.f, 0.f, -1.f), 0.5f, std::make_shared<Lambertian>(vec3(0.8f, 0.3f, 0.3f))));      // diffuse sphere at the center of the screen
-        world.add(std::make_unique<Sphere>(vec3(0.f, -100.5f, -1.f), 100.f, std::make_shared<Lambertian>(vec3(0.8f, 0.8f, 0.f))));  // diffuse sphere representing the ground
-        world.add(std::make_unique<Sphere>(vec3(1.f, 0.f, -1.f), 0.5f, std::make_shared<Metal>(vec3(0.8f, 0.6f, 0.2f), 0.3f)));     // metallic sphere on the right side of the diffuse one
-        world.add(std::make_unique<Sphere>(vec3(-1.f, 0.f, -1.f), 0.5f, std::make_shared<Dielectric>(1.5f)));                       // hollow glass sphere on the left side of the diffuse one
-        world.add(std::make_unique<Sphere>(vec3(-1.f, 0.f, -1.f), -0.45f, std::make_shared<Dielectric>(1.5f)));
+        world.add(std::make_unique<Sphere>(vec3(0.f, 0.f, -1.f), 0.5f, lambertianMat1));        // diffuse sphere at the center of the screen
+        world.add(std::make_unique<Sphere>(vec3(0.f, -100.5f, -1.f), 100.f, lambertianMat2));   // diffuse sphere representing the ground
+        world.add(std::make_unique<Sphere>(vec3(1.f, 0.f, -1.f), 0.5f, metallicMat));           // metallic sphere on the right side of the diffuse one
+        world.add(std::make_unique<Sphere>(vec3(-1.f, 0.f, -1.f), 0.5f, dielectricMat));        // glass sphere on the left side of the diffuse one
+        world.add(std::make_unique<Sphere>(vec3(-1.f, 0.f, -1.f), -0.45f, dielectricMat));      // activate this to make the glass sphere hollow (negative radius)
     }
 
     void writeImageFile(const ImageData* imageData)
