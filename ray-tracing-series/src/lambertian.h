@@ -5,7 +5,7 @@
 
 namespace rts // for ray tracing series
 {
-    class Lambertian : public Material
+    class Lambertian final : public Material
     {
     public:
         Lambertian(const vec3& albedo) : m_albedo(albedo) {}

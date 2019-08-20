@@ -4,7 +4,7 @@
 
 namespace rts // for ray tracing series
 {
-    class Dielectric : public Material
+    class Dielectric final : public Material
     {
     public:
         Dielectric(float refIdx) : m_refIdx(refIdx) {}

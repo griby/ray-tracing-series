@@ -10,6 +10,8 @@ namespace rts // for ray tracing series
     class Material
     {
     public:
+        virtual ~Material() {}
+
         virtual bool scatter(const Ray& rIn, const HitRecord& rec, vec3& attenuation, Ray& scattered, Random& random) const = 0;
     };
 }

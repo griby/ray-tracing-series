@@ -7,7 +7,7 @@
 
 namespace rts // for ray tracing series
 {
-    class Metal : public Material
+    class Metal final : public Material
     {
     public:
         Metal(const vec3& albedo, float fuzz) : m_albedo(albedo), m_fuzz(std::min(fuzz, 1.f)) {}

@@ -4,7 +4,7 @@
 
 namespace rts // for ray tracing series
 {
-    class Timer
+    class Timer final
     {
     public:
         Timer() : m_startTime() {}

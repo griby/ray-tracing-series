@@ -4,7 +4,7 @@
 
 namespace rts // for ray tracing series
 {
-    class Random
+    class Random final
     {
     public:
         // Initialize the random number generator

@@ -18,6 +18,8 @@ namespace rts // for ray tracing series
     class Hitable
     {
     public:
+        virtual ~Hitable() {}
+
         virtual bool hit(const Ray& r, float tMin, float tMax, HitRecord& rec) const = 0;
     };
 }

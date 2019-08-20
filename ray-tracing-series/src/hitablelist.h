@@ -7,7 +7,7 @@
 
 namespace rts // for ray tracing series
 {
-    class HitableList : public Hitable
+    class HitableList final : public Hitable
     {
     public:
         HitableList() : m_list() {}

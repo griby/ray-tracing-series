@@ -4,7 +4,7 @@
 
 namespace rts // for ray tracing series
 {
-    class Ray
+    class Ray final
     {
     public:
         Ray() : m_origin(), m_direction() {}

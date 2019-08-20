@@ -6,7 +6,7 @@
 
 namespace rts // for ray tracing series
 {
-    class vec3
+    class vec3 final
     {
     public:
         vec3() { e[0] = e[1] = e[2] = 0.f; }

@@ -4,7 +4,7 @@
 
 namespace rts // for ray tracing series
 {
-    class Camera
+    class Camera final
     {
     public:
         Camera(float aspectRatio)

@@ -6,7 +6,7 @@
 
 namespace rts // for ray tracing series
 {
-    class Sphere : public Hitable
+    class Sphere final : public Hitable
     {
     public:
         Sphere() : m_center(vec3()), m_radius(0.f) {}
