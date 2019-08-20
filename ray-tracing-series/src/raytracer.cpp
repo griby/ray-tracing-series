@@ -47,14 +47,14 @@ namespace rts
     }
 
     // TODO Add more information from http://psgraphics.blogspot.com/2015/06/ray-tracing-refraction.html
-    bool getRefracted(const vec3& v, const vec3& n, float niOverNt, vec3& refracted)
+    bool getRefracted(const vec3& v, const vec3& n, float refIdxRatio, vec3& refracted)
     {
         vec3 uv = unitVector(v);
         float dt = dot(uv, n);
-        float discriminant = 1.f - niOverNt * niOverNt * (1.f - dt * dt);
+        float discriminant = 1.f - refIdxRatio * refIdxRatio * (1.f - dt * dt);
         if (discriminant > 0.f)
         {
-            refracted = niOverNt * (uv - n * dt) - n * sqrt(discriminant);
+            refracted = refIdxRatio * (uv - n * dt) - n * sqrt(discriminant);
             return true;
         }
         return false;
