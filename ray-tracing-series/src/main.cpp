@@ -1,4 +1,11 @@
-// Ray Tracing in One Weekend Book Series by Peter Shirley
+/**
+ * MIT License
+ * Copyright (c) 2019 Guillaume Riby <guillaumeriby@gmail.com>
+ *
+ * GitHub repository - https://github.com/griby/ray-tracing-series
+ *
+ * A ray tracer implementation based on the Ray Tracing in One Weekend Book Series by Peter Shirley - https://raytracing.github.io/
+ */
 
 #include <fstream>
 #include <future>
