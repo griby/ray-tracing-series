@@ -1,5 +1,7 @@
 #include "dielectric.h"
 
+#include <cmath>
+
 #include "hitable.h"
 #include "random.h"
 #include "ray.h"
@@ -22,8 +24,19 @@ namespace rts
             outwardNormal = -rec.normal;
             niOverNt = refIdx;
 
+            // Previous computation of cosine as described in the book (it's bugged!)
+            //cosine = refIdx * dt / rIn.direction().length();
+
+            // Compute the cosine to pass to Schlick's approximation function as fixed by the following post
+            // http://psgraphics.blogspot.com/2016/03/my-buggy-implimentation-of-schlick.html
+
+            // it's the cosine of the greatest of the 2 angles involved in the refraction, regardless of which direction the ray is travelling in
+            // in this case the ray is travelling from inside the sphere and towards the outside,
+            // the angle of exit will be greater since air's refraction index is lower than the material's
+
             // TODO instead of normalizing here, we should get a unit vector out of rIn.direction() and pass it to getRefracted
-            cosine = refIdx * dt / rIn.direction().length(); // TODO schlick's approximation cosine shouldn't involve the refraction index...
+            cosine = dt / rIn.direction().length(); // this is the cosine of the incoming angle (the smallest of the 2 angles)
+            cosine = sqrt(1.f - refIdx * refIdx * (1.f - cosine * cosine));
         }
         else
         {
@@ -37,7 +50,7 @@ namespace rts
         // Determine the reflection probability
         vec3 refracted;
         float reflectProb;
-        if (getRefracted(rIn.direction(), outwardNormal, niOverNt, refracted))
+        if (getRefracted(rIn.direction(), outwardNormal, niOverNt, refracted)) // TODO call getRefracted before computing the cosine, we may have computed it for nothing
         {
             reflectProb = getSchlick(cosine, refIdx);
         }
@@ -47,7 +60,7 @@ namespace rts
         }
 
         // Reflect or refract depending on the reflection probability
-        if (random.get() < reflectProb)
+        if (reflectProb == 1.f || random.get() < reflectProb)
         {
             vec3 reflected = getReflected(rIn.direction(), rec.normal);
             scattered = Ray(rec.p, reflected);

@@ -53,8 +53,8 @@ namespace rts
 
     float getSchlick(float cosine, float refIdx)
     {
-        float r0 = pow((1.f - refIdx) / (1.f + refIdx), 2.f);
-        return r0 + (1.f - r0) * pow(1.f - cosine, 5.f);
+        float r0 = pow((1.f - refIdx) / (1.f + refIdx), 2);
+        return r0 + (1.f - r0) * pow(1.f - cosine, 5);
     }
 
     vec3 getColor(const Ray& r, const HitableList& world, int depth, Random& random)
