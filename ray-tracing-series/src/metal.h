@@ -10,12 +10,12 @@ namespace rts // for ray tracing series
     class Metal : public Material
     {
     public:
-        Metal(const vec3& a, float f) : albedo(a), fuzz(std::min(f, 1.f)) {}
+        Metal(const vec3& albedo, float fuzz) : m_albedo(albedo), m_fuzz(std::min(fuzz, 1.f)) {}
 
         virtual bool scatter(const Ray& rIn, const HitRecord& rec, vec3& attenuation, Ray& scattered, Random& random) const;
 
     private:
-        vec3 albedo;
-        float fuzz;
+        vec3 m_albedo;
+        float m_fuzz;
     };
 }
