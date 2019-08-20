@@ -26,13 +26,13 @@ namespace rts // for ray tracing series
     vec3 getRandomPointInUnitSphere(Random& random);
 
     // Compute the reflected vector for the given vector and normal
-    vec3 getReflected(const vec3& v, const vec3& n);
+    vec3 getReflectedVector(const vec3& v, const vec3& n);
 
     // Compute the refracted vector for the given vector, normal and a refraction ratio
-    bool getRefracted(const vec3& v, const vec3& n, float niOverNt, vec3& refracted);
+    bool getRefractedVector(const vec3& v, const vec3& n, float niOverNt, vec3& refracted);
 
     // Compute Schlick's approximation for the given values
-    float getSchlick(float cosine, float refIdx);
+    float getSchlickApproximation(float cosine, float refIdx);
 
     // Find the color for the given ray
     vec3 getColor(const Ray& r, const HitableList& world, int depth, Random& random);

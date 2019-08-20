@@ -19,7 +19,7 @@ namespace rts
     {
         // Metallic scattering: determine a new target to bounce off the surface
         // the fuzziness adds some noise to the reflected vector
-        vec3 reflected = getReflected(unitVector(rIn.direction()), rec.normal);
+        vec3 reflected = getReflectedVector(unitVector(rIn.direction()), rec.normal);
         scattered = Ray(rec.p, reflected + m_fuzz * getRandomPointInUnitSphere(random));
 
         attenuation = m_albedo;

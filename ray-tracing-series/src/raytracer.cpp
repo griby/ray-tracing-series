@@ -40,7 +40,7 @@ namespace rts
         return p;
     }
 
-    vec3 getReflected(const vec3& v, const vec3& n)
+    vec3 getReflectedVector(const vec3& v, const vec3& n)
     {
         // Compute the reflected vector as described in chapter 8
         return v - 2 * dot(v, n) * n;
@@ -59,7 +59,7 @@ namespace rts
     // injecting cos(t), sin(t), sin(t') and cos(t') in T we get:
     // T = -sqrt(1 - (n / n')^2 * (1 - dot(D, N)^2)) N + (n / n') * (D + -dot(D, N) N)
     // T = (n / n') * D + (-dot(D, N) * (n / n') - sqrt(1 - (n / n')^2 * (1 - dot(D, N)^2))) N
-    bool getRefracted(const vec3& v, const vec3& n, float refIdxRatio, vec3& refracted)
+    bool getRefractedVector(const vec3& v, const vec3& n, float refIdxRatio, vec3& refracted)
     {
         vec3 uv = unitVector(v);
         float dt = dot(uv, n);
@@ -72,7 +72,7 @@ namespace rts
         return false;
     }
 
-    float getSchlick(float cosine, float refIdx)
+    float getSchlickApproximation(float cosine, float refIdx)
     {
         float r0 = pow((1.f - refIdx) / (1.f + refIdx), 2);
         return r0 + (1.f - r0) * pow(1.f - cosine, 5);

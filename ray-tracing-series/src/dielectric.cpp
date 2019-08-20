@@ -42,7 +42,7 @@ namespace rts
         // Determine the reflection probability
         vec3 refracted;
         float reflectProb = 1.f;
-        if (getRefracted(rIn.direction(), outwardNormal, refIdxRatio, refracted))
+        if (getRefractedVector(rIn.direction(), outwardNormal, refIdxRatio, refracted))
         {
             // Compute cosine here, where it's needed
             if (dt > 0.f)
@@ -57,7 +57,7 @@ namespace rts
                 // in this case the ray is travelling from inside the sphere and towards the outside,
                 // the angle of exit will be greater since air's refraction index is lower than the material's
 
-                // TODO instead of normalizing here, we should get a unit vector out of rIn.direction() and pass it to getRefracted
+                // TODO instead of normalizing here, we should get a unit vector out of rIn.direction() and pass it to getRefractedVector
                 cosine = dt / rIn.direction().length(); // this is the cosine of the incoming angle (the smallest of the 2 angles)
                 float discriminant = 1.f - m_refIdx * m_refIdx * (1.f - cosine * cosine);
 
@@ -66,21 +66,21 @@ namespace rts
                 if (discriminant > 0.f)
                 {
                     cosine = sqrt(discriminant);
-                    reflectProb = getSchlick(cosine, m_refIdx);
+                    reflectProb = getSchlickApproximation(cosine, m_refIdx);
                 }
             }
             else
             {
-                // TODO instead of normalizing here, we should get a unit vector out of rIn.direction() and pass it to getRefracted
+                // TODO instead of normalizing here, we should get a unit vector out of rIn.direction() and pass it to getRefractedVector
                 cosine = -dt / rIn.direction().length();
-                reflectProb = getSchlick(cosine, m_refIdx);
+                reflectProb = getSchlickApproximation(cosine, m_refIdx);
             }
         }
 
         // Reflect or refract depending on the reflection probability
         if (reflectProb == 1.f || random.get() < reflectProb)
         {
-            vec3 reflected = getReflected(rIn.direction(), rec.normal);
+            vec3 reflected = getReflectedVector(rIn.direction(), rec.normal);
             scattered = Ray(rec.p, reflected);
         }
         else
