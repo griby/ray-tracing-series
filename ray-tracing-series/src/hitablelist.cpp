@@ -9,7 +9,7 @@ namespace rts
         float closestSoFar = tMax;
 
         // Check every hitable objects and store the information for the closest one to the camera
-        for (const auto& h : *this)
+        for (const auto& h : m_list)
         {
             if (h->hit(r, tMin, closestSoFar, tempRec))
             {

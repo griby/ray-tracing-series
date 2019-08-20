@@ -23,11 +23,11 @@ namespace rts // for ray tracing series
     void populateWorld(HitableList& world)
     {
         world.reserve(5);
-        world.push_back(std::make_unique<Sphere>(vec3(0.f, 0.f, -1.f), 0.5f, std::make_shared<Lambertian>(vec3(0.8f, 0.3f, 0.3f))));        // diffuse sphere at the center of the screen
-        world.push_back(std::make_unique<Sphere>(vec3(0.f, -100.5f, -1.f), 100.f, std::make_shared<Lambertian>(vec3(0.8f, 0.8f, 0.f))));    // diffuse sphere representing the ground
-        world.push_back(std::make_unique<Sphere>(vec3(1.f, 0.f, -1.f), 0.5f, std::make_shared<Metal>(vec3(0.8f, 0.6f, 0.2f), 0.3f)));       // metallic sphere on the right side of the diffuse one
-        world.push_back(std::make_unique<Sphere>(vec3(-1.f, 0.f, -1.f), 0.5f, std::make_shared<Dielectric>(1.5f)));                         // hollow glass sphere on the left side of the diffuse one
-        world.push_back(std::make_unique<Sphere>(vec3(-1.f, 0.f, -1.f), -0.45f, std::make_shared<Dielectric>(1.5f)));
+        world.add(std::make_unique<Sphere>(vec3(0.f, 0.f, -1.f), 0.5f, std::make_shared<Lambertian>(vec3(0.8f, 0.3f, 0.3f))));      // diffuse sphere at the center of the screen
+        world.add(std::make_unique<Sphere>(vec3(0.f, -100.5f, -1.f), 100.f, std::make_shared<Lambertian>(vec3(0.8f, 0.8f, 0.f))));  // diffuse sphere representing the ground
+        world.add(std::make_unique<Sphere>(vec3(1.f, 0.f, -1.f), 0.5f, std::make_shared<Metal>(vec3(0.8f, 0.6f, 0.2f), 0.3f)));     // metallic sphere on the right side of the diffuse one
+        world.add(std::make_unique<Sphere>(vec3(-1.f, 0.f, -1.f), 0.5f, std::make_shared<Dielectric>(1.5f)));                       // hollow glass sphere on the left side of the diffuse one
+        world.add(std::make_unique<Sphere>(vec3(-1.f, 0.f, -1.f), -0.45f, std::make_shared<Dielectric>(1.5f)));
     }
 
     void writeImageFile(const ImageData* imageData)
