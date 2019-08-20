@@ -7,16 +7,16 @@ namespace rts // for ray tracing series
     class Ray
     {
     public:
-        Ray() : a(), b() {}
-        Ray(const vec3& _a, const vec3& _b) : a(_a), b(_b) {}
+        Ray() : m_origin(), m_direction() {}
+        Ray(const vec3& origin, const vec3& direction) : m_origin(origin), m_direction(direction) {}
 
-        vec3 origin() const { return a; }
-        vec3 direction() const { return b; }
+        vec3 origin() const { return m_origin; }
+        vec3 direction() const { return m_direction; }
 
-        vec3 pointAtParameter(float t) const { return a + t * b; }
+        vec3 pointAtParameter(float t) const { return m_origin + t * m_direction; }
 
     private:
-        vec3 a;
-        vec3 b;
+        vec3 m_origin;
+        vec3 m_direction;
     };
 }

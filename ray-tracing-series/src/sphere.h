@@ -9,11 +9,11 @@ namespace rts // for ray tracing series
     class Sphere : public Hitable
     {
     public:
-        Sphere() : center(vec3()), radius(0.f) {}
-        Sphere(vec3 _center, float _radius, std::shared_ptr<Material> _material)
-            : center(_center)
-            , radius(_radius)
-            , material(_material)
+        Sphere() : m_center(vec3()), m_radius(0.f) {}
+        Sphere(vec3 center, float radius, std::shared_ptr<Material> material)
+            : m_center(center)
+            , m_radius(radius)
+            , m_material(material)
         {
         }
 
@@ -22,8 +22,8 @@ namespace rts // for ray tracing series
     private:
         inline void setHitRecord(HitRecord& rec, float t, const Ray& r, const Material* material) const;
 
-        vec3 center;
-        float radius;
-        std::shared_ptr<Material> material; // a material may be shared by multiple spheres
+        vec3 m_center;
+        float m_radius;
+        std::shared_ptr<Material> m_material; // a material may be shared by multiple spheres
     };
 }

@@ -12,7 +12,7 @@ namespace rts
         vec3 target = rec.p + rec.normal + getRandomPointInUnitSphere(random);
         scattered = Ray(rec.p, target - rec.p);
 
-        attenuation = albedo;
+        attenuation = m_albedo;
 
         return true;
     }

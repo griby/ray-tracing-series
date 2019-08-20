@@ -7,21 +7,21 @@ namespace rts // for ray tracing series
     class Timer
     {
     public:
-        Timer() : startTime() {}
+        Timer() : m_startTime() {}
 
         void setStartTime()
         {
-            startTime = std::chrono::system_clock::now();
+            m_startTime = std::chrono::system_clock::now();
         }
 
         double getElapsedTime()
         {
             auto endTime = std::chrono::system_clock::now();
-            std::chrono::duration<double> elapsedSeconds = endTime - startTime;
+            std::chrono::duration<double> elapsedSeconds = endTime - m_startTime;
             return elapsedSeconds.count();
         }
 
     private:
-        std::chrono::system_clock::time_point startTime;
+        std::chrono::system_clock::time_point m_startTime;
     };
 }

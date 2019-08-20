@@ -22,12 +22,12 @@ namespace rts
         if (dt > 0.f)
         {
             outwardNormal = -rec.normal;
-            niOverNt = refIdx;
+            niOverNt = m_refIdx;
         }
         else
         {
             outwardNormal = rec.normal;
-            niOverNt = 1.f / refIdx;
+            niOverNt = 1.f / m_refIdx;
         }
 
         // Determine the reflection probability
@@ -39,7 +39,7 @@ namespace rts
             if (dt > 0.f)
             {
                 // Previous computation of cosine as described in the book (it's bugged!)
-                //cosine = refIdx * dt / rIn.direction().length();
+                //cosine = m_refIdx * dt / rIn.direction().length();
 
                 // Compute the cosine to pass to Schlick's approximation function as fixed by the following post
                 // http://psgraphics.blogspot.com/2016/03/my-buggy-implimentation-of-schlick.html
@@ -50,21 +50,21 @@ namespace rts
 
                 // TODO instead of normalizing here, we should get a unit vector out of rIn.direction() and pass it to getRefracted
                 cosine = dt / rIn.direction().length(); // this is the cosine of the incoming angle (the smallest of the 2 angles)
-                float discriminant = 1.f - refIdx * refIdx * (1.f - cosine * cosine);
+                float discriminant = 1.f - m_refIdx * m_refIdx * (1.f - cosine * cosine);
 
                 // Proceed with the Schlick approximation only if the discriminant is positive
                 // when it's negative it means that there's total internal reflection
                 if (discriminant > 0.f)
                 {
                     cosine = sqrt(discriminant);
-                    reflectProb = getSchlick(cosine, refIdx);
+                    reflectProb = getSchlick(cosine, m_refIdx);
                 }
             }
             else
             {
                 // TODO instead of normalizing here, we should get a unit vector out of rIn.direction() and pass it to getRefracted
                 cosine = -dt / rIn.direction().length();
-                reflectProb = getSchlick(cosine, refIdx);
+                reflectProb = getSchlick(cosine, m_refIdx);
             }
         }
 
