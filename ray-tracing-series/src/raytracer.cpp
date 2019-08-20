@@ -63,11 +63,11 @@ namespace rts
         HitRecord rec;
         if (world.hit(r, T_MIN, T_MAX, rec))
         {
-#if NORMAL_MAP_COLOR
+#ifdef RENDER_NORMAL_MAP
             // The normal is a unit vector ie its components fall between -1 and +1
             // map those components between 0 and +1 before returning the value
             return 0.5f * vec3(rec.normal.x() + 1.f, rec.normal.y() + 1.f, rec.normal.z() + 1.f);
-#elif IGNORE_MATERIALS
+#elif defined RENDER_NO_MATERIAL
             // The ray hit a surface, determine a new target to bounce off the surface
             vec3 target = rec.p + rec.normal + getRandomPointInUnitSphere(random);
             return 0.5f * getColor(Ray(rec.p, target - rec.p), world, depth + 1, random);
@@ -90,7 +90,7 @@ namespace rts
                 // and just ignore the result in the ray tracing sub task when it's false
                 return vec3(0.f, 0.f, 0.f);
             }
-#endif // NORMAL_MAP_COLOR
+#endif // RENDER_NORMAL_MAP, RENDER_NO_MATERIAL
         }
         else
         {
@@ -103,28 +103,28 @@ namespace rts
         }
     }
 
-#if RAY_TRACING_LOG
+#ifdef MULTITHREADING_LOGS
     // Mutex used to display debug logs
     static std::mutex ioMutex;
-#endif // RAY_TRACING_LOG
+#endif // MULTITHREADING_LOGS
 
     void rayTracingSubTask(const Camera& camera, const HitableList& world, ImageData* imageData, int startLine, int endLine, int taskId)
     {
-#if RAY_TRACING_LOG
+#ifdef MULTITHREADING_LOGS
         // Display some debug log
         {
             std::lock_guard<std::mutex> lock(ioMutex);
             std::cout << "    START | RT sub task ID[" << taskId << "] to update lines in the range [" << startLine << ", " << endLine << ")" << std::endl;
         }
-#endif // RAY_TRACING_LOG
+#endif // MULTITHREADING_LOGS
 
         // Initialize a random value generator for this specific sub task
         // give it a unique seed based on the taskId
-#if THREADING_ON
+#ifdef MULTITHREADING_ON
         Random random(taskId);
 #else
         Random random;
-#endif // THREADING_ON
+#endif // MULTITHREADING_ON
 
         // Run the ray tracer on each pixel in the range [startLine, endLine) to determine its color
         // from left to right and bottom to top
@@ -148,7 +148,7 @@ namespace rts
                 // Average the color
                 col /= static_cast<float>(SAMPLES_PER_PIXEL);
 
-#if GRAYSCALE_COLOR
+#ifdef RENDER_GRAYSCALE
                 // Colorimetric conversion to grayscale https://en.wikipedia.org/wiki/Grayscale
                 // apply it before gamma correction
                 float lum = 0.2126f * col[0] + 0.7152f * col[1] + 0.0722f * col[2]; // compute the luminance
@@ -170,7 +170,7 @@ namespace rts
                 int ib = int(255.99f * col[2]);
 
                 auto finalColor = std::make_tuple(ir, ig, ib);
-#endif // GRAYSCALE_COLOR
+#endif // RENDER_GRAYSCALE
 
                 // Store the resulting color in the array
                 (*imageData)[i + j * IMAGE_WIDTH] = finalColor;
@@ -180,7 +180,7 @@ namespace rts
 
     void rayTracingMainTask(const Camera& camera, const HitableList& world, ImageData* imageData)
     {
-#if THREADING_ON
+#ifdef MULTITHREADING_ON
         std::vector<std::future<void>> subTaskFutures;
 
         // The number of lines that each task will take care of
@@ -193,13 +193,13 @@ namespace rts
             int startLine = taskId * linesPerTask;
             int endLine = (taskId == NUMBER_OF_TASKS - 1) ? IMAGE_HEIGHT : startLine + linesPerTask;
 
-#if RAY_TRACING_LOG
+#ifdef MULTITHREADING_LOGS
             // Display some debug log
             {
                 std::lock_guard<std::mutex> lock(ioMutex);
                 std::cout << "  CREATE | RT sub task ID[" << taskId << "] to update the range [" << startLine << ", " << endLine << ")" << std::endl;
             }
-#endif // RAY_TRACING_LOG
+#endif // MULTITHREADING_LOGS
             
             // Create the async sub task
             auto subTask = std::async(std::launch::async,
@@ -212,6 +212,6 @@ namespace rts
 #else
         // Multithreading is disabled, just call the function directly to update the entire image
         rayTracingSubTask(camera, world, imageData, 0, IMAGE_HEIGHT, -1);
-#endif // THREADING_ON
+#endif // MULTITHREADING_ON
     }
 }
