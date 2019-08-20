@@ -68,9 +68,21 @@ namespace rts
             // map those components between 0 and +1 before returning the value
             return 0.5f * vec3(rec.normal.x() + 1.f, rec.normal.y() + 1.f, rec.normal.z() + 1.f);
 #elif defined RENDER_NO_MATERIAL
-            // The ray hit a surface, determine a new target to bounce off the surface
-            vec3 target = rec.p + rec.normal + getRandomPointInUnitSphere(random);
-            return 0.5f * getColor(Ray(rec.p, target - rec.p), world, depth + 1, random);
+            // The ray hit a surface, determine a new target to bounce off of it
+            // also check the depth to avoid infinite recursions, it can happen with spheres of negative radius
+            // rays end up being trapped inside and there's no refraction possible since we ignore the material
+            if (depth < 50)
+            {
+                vec3 target = rec.p + rec.normal + getRandomPointInUnitSphere(random);
+                return 0.5f * getColor(Ray(rec.p, target - rec.p), world, depth + 1, random);
+            }
+            else
+            {
+                // TODO This ray shouldn't contribute to the overall pixel's color
+                // have the getColor function return a boolean and the color passed-by-ref instead
+                // and just ignore the result in the ray tracing sub task when it's false
+                return vec3(0.f, 0.f, 0.f);
+            }
 #else
             // The surface must have a material
             assert(rec.matPtr != nullptr);
