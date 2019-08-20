@@ -1,5 +1,6 @@
 #include "lambertian.h"
 
+#include "defines.h"
 #include "hitable.h"
 #include "ray.h"
 #include "rayTracer.h"
@@ -8,6 +9,8 @@ namespace rts
 {
     bool Lambertian::scatter(const Ray& rIn, const HitRecord& rec, vec3& attenuation, Ray& scattered, Random& random) const
     {
+        RTS_UNUSED(rIn);
+
         // Diffuse scattering: determine a new random target to bounce off the surface
         vec3 target = rec.p + rec.normal + getRandomPointInUnitSphere(random);
         scattered = Ray(rec.p, target - rec.p);
