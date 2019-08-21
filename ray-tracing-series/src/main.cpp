@@ -16,6 +16,7 @@
 
 #include "camera.h"
 #include "config.h"
+#include "defines.h"
 #include "dielectric.h"
 #include "hitableList.h"
 #include "lambertian.h"
@@ -30,7 +31,7 @@ namespace rts // for ray tracing series
 {
     void generateCustomWorld(HitableList& world)
     {
-        auto lambertianMat1 = std::make_shared<Lambertian>(vec3(0.8f, 0.3f, 0.3f));
+        auto lambertianMat1 = std::make_shared<Lambertian>(vec3(0.1f, 0.2f, 0.5f));
         auto lambertianMat2 = std::make_shared<Lambertian>(vec3(0.8f, 0.8f, 0.f));
         auto metallicMat = std::make_shared<Metal>(vec3(0.8f, 0.6f, 0.2f), 0.3f);
         auto dielectricMat = std::make_shared<Dielectric>(1.5f);
@@ -41,6 +42,14 @@ namespace rts // for ray tracing series
         world.add(std::make_unique<Sphere>(vec3(1.f, 0.f, -1.f), 0.5f, metallicMat));           // metallic sphere on the right side of the diffuse one
         world.add(std::make_unique<Sphere>(vec3(-1.f, 0.f, -1.f), 0.5f, dielectricMat));        // glass sphere on the left side of the diffuse one
         world.add(std::make_unique<Sphere>(vec3(-1.f, 0.f, -1.f), -0.45f, dielectricMat));      // activate this to make the glass sphere hollow (negative radius)
+    }
+
+    void generateSimpleCustomWorld(HitableList& world)
+    {
+        float R = cos(static_cast<int>(M_PI) / 4.f);
+        world.reserve(2);
+        world.add(std::make_unique<Sphere>(vec3(-R, 0.f, -1.f), R, std::make_shared<Lambertian>(vec3(0.f, 0.f, 1.f))));
+        world.add(std::make_unique<Sphere>(vec3(R, 0.f, -1.f), R, std::make_shared<Lambertian>(vec3(1.f, 0.f, 0.f))));
     }
 
     void generateRandomWorld(HitableList& world)
@@ -112,7 +121,7 @@ int main()
 {
     using namespace rts;
 
-    std::cout << "Ray Tracing in One Weekend Book Series by Peter Shirley\n\n";
+    std::cout << "A ray tracer implementation based on the Ray Tracing in One Weekend Book Series by Peter Shirley - https://raytracing.github.io/\n\n";
     Timer globalTimer;
     globalTimer.setStartTime();
 
@@ -122,15 +131,18 @@ int main()
     stepTimer.setStartTime();
 
     HitableList world;
+    std::unique_ptr<Camera> camera;
     if (WORLD_GEN_RANDOM)
     {
         generateRandomWorld(world);
+        camera = std::make_unique<Camera>(vec3(6.f, 1.5f, -2.f), vec3(0.f, 0.5f, 0.f), vec3(0.f, 1.f, 0.f), CAMERA_FOV, CAMERA_ASPECT_RATIO);
     }
     else
     {
         generateCustomWorld(world);
+        //generateSimpleCustomWorld(world);
+        camera = std::make_unique<Camera>(vec3(-2.f, 2.f, 1.f), vec3(0.f, 0.f, -1.f), vec3(0.f, 1.f, 0.f), CAMERA_FOV, CAMERA_ASPECT_RATIO);
     }
-    Camera camera(IMAGE_ASPECT_RATIO);
 
     std::cout << "Done! (" << stepTimer.getElapsedTime() << "s)\n\n";
 
@@ -141,7 +153,7 @@ int main()
     // Start the ray tracing main task
     auto imageData = std::make_unique<ImageData>();
     auto mainTask = std::async(std::launch::async,
-        [&]() { rayTracingMainTask(camera, world, imageData.get()); });
+        [&]() { rayTracingMainTask(*camera.get(), world, imageData.get()); });
 
     // Check periodically if the main task is completed
     while (mainTask.wait_for(std::chrono::milliseconds(500)) != std::future_status::ready)

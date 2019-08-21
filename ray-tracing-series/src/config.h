@@ -20,7 +20,10 @@ namespace rts // for ray tracing series
     // Image resolution
     const int IMAGE_WIDTH = 800;
     const int IMAGE_HEIGHT = 600;
-    const float IMAGE_ASPECT_RATIO = static_cast<float>(IMAGE_WIDTH) / IMAGE_HEIGHT;
+
+    // Camera parameters
+    const float CAMERA_ASPECT_RATIO = static_cast<float>(IMAGE_WIDTH) / IMAGE_HEIGHT;
+    const float CAMERA_FOV = 90.f;
 
     // Ray tracing parameters
     const int RAY_COUNT_PER_PIXEL = 100;

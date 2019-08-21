@@ -9,6 +9,10 @@
 
 #pragma once
 
+ // To get a global access to M_PI
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 namespace rts // for ray tracing series
 {
     // The following configuration defines can be added to the preprocessor definitions:
