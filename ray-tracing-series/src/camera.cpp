@@ -26,7 +26,8 @@ namespace rts
         vec3 u = unitVector(cross(vUp, w));
         vec3 v = cross(w, u);
 
-        // Determine the lower-left corner of the focus plane along with its horizontal and vertical axes
+        // Determine a point in space which corresponds to the lower-left corner of our screen
+        // along with the screen's horizontal and vertical axes
         m_lowerLeftCorner = vec3(-halfWidth, -halfHeight, -1.f);
         m_lowerLeftCorner = m_origin - halfWidth * u - halfHeight * v - w;
         m_horizontal = 2.f * halfWidth * u;

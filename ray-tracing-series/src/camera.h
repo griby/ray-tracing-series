@@ -19,7 +19,7 @@ namespace rts // for ray tracing series
         Camera(vec3 lookFrom, vec3 lookAt, vec3 vUp, float vFov, float aspectRatio);
 
         // Return the ray starting at the camera position and oriented towards a specific point in space
-        // this point is determined by applying the given offset to the arbitrary position lowerLeftCorner
+        // this point is determined by applying the given offset to the point corresponding to the lower-left corner
         Ray getRay(float u, float v) const { return Ray(m_origin, m_lowerLeftCorner + u * m_horizontal + v * m_vertical - m_origin); }
 
     private:
