@@ -33,6 +33,9 @@ namespace rts // for ray tracing series
     // Multithreading parameters
     const int SUBTASK_COUNT = 8;
 
+    // World generation
+    const bool WORLD_GEN_RANDOM = false;
+
     // Optimization
     // The following configuration parameter can be changed to speed up the image generation:
     // Project Properties > C/C++ > Code Generation > Floating Point Model

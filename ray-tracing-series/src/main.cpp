@@ -20,6 +20,7 @@
 #include "hitableList.h"
 #include "lambertian.h"
 #include "metal.h"
+#include "random.h"
 #include "rayTracer.h"
 #include "sphere.h"
 #include "timer.h"
@@ -27,7 +28,7 @@
 
 namespace rts // for ray tracing series
 {
-    void populateWorld(HitableList& world)
+    void generateCustomWorld(HitableList& world)
     {
         auto lambertianMat1 = std::make_shared<Lambertian>(vec3(0.8f, 0.3f, 0.3f));
         auto lambertianMat2 = std::make_shared<Lambertian>(vec3(0.8f, 0.8f, 0.f));
@@ -40,6 +41,44 @@ namespace rts // for ray tracing series
         world.add(std::make_unique<Sphere>(vec3(1.f, 0.f, -1.f), 0.5f, metallicMat));           // metallic sphere on the right side of the diffuse one
         world.add(std::make_unique<Sphere>(vec3(-1.f, 0.f, -1.f), 0.5f, dielectricMat));        // glass sphere on the left side of the diffuse one
         world.add(std::make_unique<Sphere>(vec3(-1.f, 0.f, -1.f), -0.45f, dielectricMat));      // activate this to make the glass sphere hollow (negative radius)
+    }
+
+    void generateRandomWorld(HitableList& world)
+    {
+        world.reserve(500);
+        world.add(std::make_unique<Sphere>(vec3(0.f, -1000.f, 0.f), 1000.f, std::make_shared<Lambertian>(vec3(0.5f, 0.5f, 0.5f))));
+
+        Random random;
+        for (int a = -11; a < 11; ++a)
+        {
+            for (int b = -11; b < 11; ++b)
+            {
+                float chooseMat = random.get();
+                vec3 center(a + 0.9f * random.get(), 0.2f, b + 0.9f * random.get());
+
+                if ((center - vec3(4.f, 0.2f, 0.f)).length() > 0.9f)
+                {
+                    if (chooseMat < 0.8f) // diffuse
+                    {
+                        world.add(std::make_unique<Sphere>(center, 0.2f,
+                            std::make_shared<Lambertian>(vec3(random.get() * random.get(), random.get() * random.get(), random.get() * random.get()))));
+                    }
+                    else if (chooseMat < 0.95f) // metal
+                    {
+                        world.add(std::make_unique<Sphere>(center, 0.2f,
+                            std::make_shared<Metal>(vec3(0.5f * (1.f + random.get()), 0.5f * (1.f + random.get()), 0.5f * (1.f + random.get())), 0.5f * random.get())));
+                    }
+                    else // glass
+                    {
+                        world.add(std::make_unique<Sphere>(center, 0.2f, std::make_shared<Dielectric>(1.5f)));
+                    }
+                }
+            }
+        }
+
+        world.add(std::make_unique<Sphere>(vec3(0.f, 1.f, 0.f), 1.f, std::make_shared<Dielectric>(1.5f)));
+        world.add(std::make_unique<Sphere>(vec3(-4.f, 1.f, 0.f), 1.f, std::make_shared<Lambertian>(vec3(0.4f, 0.2f, 0.1f))));
+        world.add(std::make_unique<Sphere>(vec3(4.f, 1.f, 0.f), 1.f, std::make_shared<Metal>(vec3(0.7f, 0.6f, 0.5f), 0.f)));
     }
 
     void writeImageFile(const ImageData* imageData)
@@ -83,7 +122,14 @@ int main()
     stepTimer.setStartTime();
 
     HitableList world;
-    populateWorld(world);
+    if (WORLD_GEN_RANDOM)
+    {
+        generateRandomWorld(world);
+    }
+    else
+    {
+        generateCustomWorld(world);
+    }
     Camera camera(IMAGE_ASPECT_RATIO);
 
     std::cout << "Done! (" << stepTimer.getElapsedTime() << "s)\n\n";
