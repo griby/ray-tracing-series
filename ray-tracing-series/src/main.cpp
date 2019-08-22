@@ -132,7 +132,7 @@ int main()
 
     HitableList world;
     std::unique_ptr<Camera> camera;
-    if (WORLD_GEN_RANDOM)
+    if (WORLD_GENERATION_RANDOM)
     {
         generateRandomWorld(world);
 

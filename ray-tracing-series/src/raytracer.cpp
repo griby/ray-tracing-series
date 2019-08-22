@@ -30,7 +30,7 @@ namespace rts
     {
         // Check if the ray hits any object
         HitRecord rec;
-        if (world.hit(r, T_MIN, T_MAX, rec))
+        if (world.hit(r, RAY_LENGTH_MIN, RAY_LENGTH_MAX, rec))
         {
 #ifdef RENDER_NORMAL_MAP
             // The normal is a unit vector ie its components fall between -1 and +1
@@ -40,7 +40,7 @@ namespace rts
             // The ray hit a surface, determine a new target to bounce off of it
             // also check the depth to avoid infinite recursions, it can happen with spheres of negative radius
             // rays end up being trapped inside and there's no refraction possible since we ignore the material
-            if (depth < RAY_MAX_DEPTH)
+            if (depth < RAY_DEPTH_MAX)
             {
                 vec3 target = rec.p + rec.normal + getRandomPointInUnitSphere(random);
                 return 0.5f * getColor(Ray(rec.p, target - rec.p), world, depth + 1, random);
@@ -60,7 +60,7 @@ namespace rts
             vec3 attenuation;
 
             // The ray hit a surface, get the attenuation and scattered information from its material
-            if (depth < RAY_MAX_DEPTH && rec.matPtr->scatter(r, rec, attenuation, scattered, random))
+            if (depth < RAY_DEPTH_MAX && rec.matPtr->scatter(r, rec, attenuation, scattered, random))
             {
                 return attenuation * getColor(scattered, world, depth + 1, random);
             }
@@ -79,9 +79,8 @@ namespace rts
             vec3 unitDirection = unitVector(r.direction());     // unitDirection Y is between -1 and +1
             float t = 0.5f * (unitDirection.y() + 1.f);         // scale unitDirection Y between 0 and +1
 
-            // TODO Move those values to config.h
-            // Blend between white and blue depending on the direction Y
-            return (1.f - t) * vec3(1.f, 1.f, 1.f) + t * vec3(0.5f, 0.7f, 1.f);
+            // Blend the background top/bottom colors depending on the ray's direction
+            return (1.f - t) * WORLD_BACKGROUND_COLOR_BOTTOM + t * WORLD_BACKGROUND_COLOR_TOP;
         }
     }
 
@@ -143,8 +142,11 @@ namespace rts
 
                 auto finalColor = std::make_tuple(il, il, il);
 #else
-                // Apply a gamma to brighten the color
-                col = vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
+                // Apply gamma correction to the color
+                col = vec3(
+                    pow(col[0], 1.f / IMAGE_GAMMA_CORRECTION),
+                    pow(col[1], 1.f / IMAGE_GAMMA_CORRECTION),
+                    pow(col[2], 1.f / IMAGE_GAMMA_CORRECTION));
 
                 // Scale the color between 0 and 255
                 int ir = int(255.99f * col[0]);
@@ -166,14 +168,14 @@ namespace rts
         std::vector<std::future<void>> subTaskFutures;
 
         // The number of lines that each task will take care of
-        int linesPerTask = IMAGE_HEIGHT / SUBTASK_COUNT;
+        int linesPerTask = IMAGE_HEIGHT / MULTITHREADING_SUBTASK_COUNT;
 
         // Initialize each of the tasks
-        for (int taskId = 0; taskId < SUBTASK_COUNT; ++taskId)
+        for (int taskId = 0; taskId < MULTITHREADING_SUBTASK_COUNT; ++taskId)
         {
             // The last task takes care of whatever is left
             int startLine = taskId * linesPerTask;
-            int endLine = (taskId == SUBTASK_COUNT - 1) ? IMAGE_HEIGHT : startLine + linesPerTask;
+            int endLine = (taskId == MULTITHREADING_SUBTASK_COUNT - 1) ? IMAGE_HEIGHT : startLine + linesPerTask;
 
 #ifdef MULTITHREADING_LOGS
             // Display some debug log
