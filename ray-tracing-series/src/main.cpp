@@ -22,7 +22,7 @@
 #include "lambertian.h"
 #include "metal.h"
 #include "random.h"
-#include "rayTracer.h"
+#include "raytracer.h"
 #include "sphere.h"
 #include "timer.h"
 #include "vec3.h"
@@ -135,13 +135,23 @@ int main()
     if (WORLD_GEN_RANDOM)
     {
         generateRandomWorld(world);
-        camera = std::make_unique<Camera>(vec3(6.f, 1.5f, -2.f), vec3(0.f, 0.5f, 0.f), vec3(0.f, 1.f, 0.f), CAMERA_FOV, CAMERA_ASPECT_RATIO);
+
+        vec3 lookFrom(6.f, 1.5f, -2.f);
+        vec3 lookAt(4.f, 1.1667f, -1.333f);
+        float distToFocus = (lookFrom - lookAt).length();
+        float aperture = 0.02f;
+        camera = std::make_unique<Camera>(lookFrom, lookAt, vec3(0.f, 1.f, 0.f), CAMERA_FOV, CAMERA_ASPECT_RATIO, aperture, distToFocus);
     }
     else
     {
         generateCustomWorld(world);
         //generateSimpleCustomWorld(world);
-        camera = std::make_unique<Camera>(vec3(-2.f, 2.f, 1.f), vec3(0.f, 0.f, -1.f), vec3(0.f, 1.f, 0.f), CAMERA_FOV, CAMERA_ASPECT_RATIO);
+
+        vec3 lookFrom(3.f, 3.f, 2.f);
+        vec3 lookAt(0.f, 0.f, -1.f);
+        float distToFocus = (lookFrom - lookAt).length();
+        float aperture = 2.f;
+        camera = std::make_unique<Camera>(lookFrom, lookAt, vec3(0.f, 1.f, 0.f), 20.f, CAMERA_ASPECT_RATIO, aperture, distToFocus);
     }
 
     std::cout << "Done! (" << stepTimer.getElapsedTime() << "s)\n\n";

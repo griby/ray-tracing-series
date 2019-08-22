@@ -14,7 +14,7 @@
 #include "hitable.h"
 #include "random.h"
 #include "ray.h"
-#include "rayTracer.h"
+#include "utils.h"
 
 namespace rts
 {

@@ -13,19 +13,23 @@
 
 namespace rts // for ray tracing series
 {
+    class Random;
+
     class Camera final
     {
     public:
-        Camera(vec3 lookFrom, vec3 lookAt, vec3 vUp, float vFov, float aspectRatio);
+        Camera(vec3 lookFrom, vec3 lookAt, vec3 vUp, float vFov, float aspectRatio, float aperture, float focusDist);
 
         // Return the ray starting at the camera position and oriented towards a specific point in space
         // this point is determined by applying the given offset to the point corresponding to the lower-left corner
-        Ray getRay(float u, float v) const { return Ray(m_origin, m_lowerLeftCorner + u * m_horizontal + v * m_vertical - m_origin); }
+        Ray getRay(float s, float t, Random& random) const;
 
     private:
         vec3 m_origin;
         vec3 m_lowerLeftCorner;
         vec3 m_horizontal;
         vec3 m_vertical;
+        vec3 u, v, w; // camera's orthonormal basis
+        float m_lensRadius;
     };
 }

@@ -12,7 +12,7 @@
 #include "defines.h"
 #include "hitable.h"
 #include "ray.h"
-#include "rayTracer.h"
+#include "utils.h"
 
 namespace rts
 {
