@@ -23,7 +23,7 @@ namespace rts // for ray tracing series
     class Ray;
 
     // Find the color for the given ray
-    vec3 getColor(const Ray& r, const HitableList& world, int depth, Random& random);
+    bool getColor(const Ray& r, const HitableList& world, int depth, vec3& color, Random& random);
 
     // Declare aliases for the image data
     using Color = std::tuple<int, int, int>;

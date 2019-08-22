@@ -26,7 +26,7 @@
 
 namespace rts
 {
-    vec3 getColor(const Ray& r, const HitableList& world, int depth, Random& random)
+    bool getColor(const Ray& r, const HitableList& world, int depth, vec3& color, Random& random)
     {
         // Check if the ray hits any object
         HitRecord rec;
@@ -35,7 +35,8 @@ namespace rts
 #ifdef RENDER_NORMAL_MAP
             // The normal is a unit vector ie its components fall between -1 and +1
             // map those components between 0 and +1 before returning the value
-            return 0.5f * vec3(rec.normal.x() + 1.f, rec.normal.y() + 1.f, rec.normal.z() + 1.f);
+            color = 0.5f * vec3(rec.normal.x() + 1.f, rec.normal.y() + 1.f, rec.normal.z() + 1.f);
+            return true;
 #elif defined RENDER_NO_MATERIAL
             // The ray hit a surface, determine a new target to bounce off of it
             // also check the depth to avoid infinite recursions, it can happen with spheres of negative radius
@@ -43,15 +44,18 @@ namespace rts
             if (depth < RAY_DEPTH_MAX)
             {
                 vec3 target = rec.p + rec.normal + getRandomPointInUnitSphere(random);
-                return 0.5f * getColor(Ray(rec.p, target - rec.p), world, depth + 1, random);
+                if (getColor(Ray(rec.p, target - rec.p), world, depth + 1, color, random))
+                {
+                    // A color has been found, apply an attenuation factor to it
+                    color *= 0.5f;
+                    return true;
+                }
+                // A color couldn't be found, so this ray shouldn't contribute to the pixel's color
+                return false;
             }
-            else
-            {
-                // TODO This ray shouldn't contribute to the overall pixel's color
-                // have the getColor function return a boolean and the color passed-by-ref instead
-                // and just ignore the result in the ray tracing sub task when it's false
-                return vec3(0.f, 0.f, 0.f);
-            }
+            // The maximum depth has been reached, return the black color
+            color = vec3(0.f, 0.f, 0.f);
+            return true;
 #else
             // The surface must have a material
             assert(rec.matPtr != nullptr);
@@ -60,17 +64,21 @@ namespace rts
             vec3 attenuation;
 
             // The ray hit a surface, get the attenuation and scattered information from its material
-            if (depth < RAY_DEPTH_MAX && rec.matPtr->scatter(r, rec, attenuation, scattered, random))
+            if (depth < RAY_DEPTH_MAX)
             {
-                return attenuation * getColor(scattered, world, depth + 1, random);
+                if (rec.matPtr->scatter(r, rec, attenuation, scattered, random)
+                    && getColor(scattered, world, depth + 1, color, random))
+                {
+                    // A color has been found, apply an attenuation factor to it
+                    color *= attenuation;
+                    return true;
+                }
+                // The ray couldn't be scattered or a color couldn't be found, so this ray shouldn't contribute to the pixel's color
+                return false;
             }
-            else
-            {
-                // TODO This ray shouldn't contribute to the overall pixel's color
-                // have the getColor function return a boolean and the color passed-by-ref instead
-                // and just ignore the result in the ray tracing sub task when it's false
-                return vec3(0.f, 0.f, 0.f);
-            }
+            // The maximum depth has been reached, return the black color
+            color = vec3(0.f, 0.f, 0.f);
+            return true;
 #endif // RENDER_NORMAL_MAP, RENDER_NO_MATERIAL
         }
         else
@@ -80,7 +88,8 @@ namespace rts
             float t = 0.5f * (unitDirection.y() + 1.f);         // scale unitDirection Y between 0 and +1
 
             // Blend the background top/bottom colors depending on the ray's direction
-            return (1.f - t) * WORLD_BACKGROUND_COLOR_BOTTOM + t * WORLD_BACKGROUND_COLOR_TOP;
+            color = (1.f - t) * WORLD_BACKGROUND_COLOR_BOTTOM + t * WORLD_BACKGROUND_COLOR_TOP;
+            return true;
         }
     }
 
@@ -113,7 +122,8 @@ namespace rts
         {
             for (int i = 0; i < IMAGE_WIDTH; ++i)
             {
-                vec3 col(0.f, 0.f, 0.f); // the accumulated color
+                vec3 col(0.f, 0.f, 0.f);    // the accumulated color
+                int sampleCount = 0;        // the number of valid samples
 
                 // Sample multiple times randomly within the current pixel
                 for (int s = 0; s < RAY_COUNT_PER_PIXEL; ++s)
@@ -122,12 +132,17 @@ namespace rts
                     float v = float(j + random.get()) / float(IMAGE_HEIGHT);
                     Ray r = camera.getRay(u, v, random);
 
-                    // Accumulate the sample
-                    col += getColor(r, world, 0, random);
+                    // Accumulate the sample if it's valid, otherwise discard it
+                    vec3 sampleColor;
+                    if (getColor(r, world, 0, sampleColor, random))
+                    {
+                        col += sampleColor;
+                        ++sampleCount;
+                    }
                 }
 
                 // Average the color
-                col /= static_cast<float>(RAY_COUNT_PER_PIXEL);
+                col /= static_cast<float>(sampleCount);
 
 #ifdef RENDER_GRAYSCALE
                 // Colorimetric conversion to grayscale https://en.wikipedia.org/wiki/Grayscale
