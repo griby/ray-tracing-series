@@ -61,12 +61,11 @@ namespace rts
     // T = (n / n') * D + (-dot(D, N) * (n / n') - sqrt(1 - (n / n')^2 * (1 - dot(D, N)^2))) N
     bool getRefractedVector(const vec3& v, const vec3& n, float refIdxRatio, vec3& refracted)
     {
-        vec3 uv = unitVector(v);
-        float dt = dot(uv, n);
+        float dt = dot(v, n);
         float discriminant = 1.f - refIdxRatio * refIdxRatio * (1.f - dt * dt);
         if (discriminant > 0.f)
         {
-            refracted = refIdxRatio * (uv - n * dt) - n * sqrt(discriminant);
+            refracted = refIdxRatio * (v - n * dt) - n * sqrt(discriminant);
             return true;
         }
         return false;

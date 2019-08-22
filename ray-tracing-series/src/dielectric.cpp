@@ -26,8 +26,8 @@ namespace rts
         // Determine the outward normal and the refraction indexes ratio
         vec3 outwardNormal;
         float refIdxRatio;
-        float cosine;
-        float dt = dot(rIn.direction(), rec.normal);
+        vec3 unitDirection = unitVector(rIn.direction());
+        float dt = dot(unitDirection, rec.normal);
         if (dt > 0.f)
         {
             outwardNormal = -rec.normal;
@@ -42,9 +42,9 @@ namespace rts
         // Determine the reflection probability
         vec3 refracted;
         float reflectProb = 1.f;
-        if (getRefractedVector(rIn.direction(), outwardNormal, refIdxRatio, refracted))
+        if (getRefractedVector(unitDirection, outwardNormal, refIdxRatio, refracted))
         {
-            // Compute cosine here, where it's needed
+            // Compute the reflection probability
             if (dt > 0.f)
             {
                 // Previous computation of cosine as described in the book (it's bugged!)
@@ -57,23 +57,20 @@ namespace rts
                 // in this case the ray is travelling from inside the sphere and towards the outside,
                 // the angle of exit will be greater since air's refraction index is lower than the material's
 
-                // TODO instead of normalizing here, we should get a unit vector out of rIn.direction() and pass it to getRefractedVector
-                cosine = dt / rIn.direction().length(); // this is the cosine of the incoming angle (the smallest of the 2 angles)
-                float discriminant = 1.f - m_refIdx * m_refIdx * (1.f - cosine * cosine);
+                // dt is the cosine of the incoming angle (the smallest of the 2 angles)
+                // compute the cosine of the exiting angle
+                float discriminant = 1.f - m_refIdx * m_refIdx * (1.f - dt * dt);
 
                 // Proceed with the Schlick approximation only if the discriminant is positive
                 // when it's negative it means that there's total internal reflection
                 if (discriminant > 0.f)
                 {
-                    cosine = sqrt(discriminant);
-                    reflectProb = getSchlickApproximation(cosine, m_refIdx);
+                    reflectProb = getSchlickApproximation(sqrt(discriminant), m_refIdx);
                 }
             }
             else
             {
-                // TODO instead of normalizing here, we should get a unit vector out of rIn.direction() and pass it to getRefractedVector
-                cosine = -dt / rIn.direction().length();
-                reflectProb = getSchlickApproximation(cosine, m_refIdx);
+                reflectProb = getSchlickApproximation(-dt, m_refIdx);
             }
         }
 
