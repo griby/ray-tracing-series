@@ -20,10 +20,9 @@ namespace rts
 {
     bool Dielectric::scatter(const Ray& rIn, const HitRecord& rec, vec3& attenuation, Ray& scattered, Random& random) const
     {
-        // Dielectric scattering...
-        attenuation = vec3(1.f, 1.f, 1.f); // TODO could be a member of the Dielectric class to affect its tint
+        attenuation = m_albedo;
 
-        // Determine the outward normal and the refraction indexes ratio
+        // Dielectric scattering: Determine the outward normal and the refraction indexes ratio
         vec3 outwardNormal;
         float refIdxRatio;
         vec3 unitDirection = unitVector(rIn.direction());
