@@ -59,7 +59,7 @@ namespace rts
         rec.matPtr = material;
     }
 
-    // Previous hitSphere function which has been replaced by the Sphere:hit method (see above)
+    // Previous hitSphere function which has been replaced by the Sphere::hit method (see above)
     // To determine if a ray hits a sphere consider this,
     // any point P that's on a sphere of radius R and center C must satisfy the following equation:
     //      (Px-Cx)*(Px-Cx) + (Py-Cy)*(Py-Cy) + (Pz-Cz)*(Pz-Cz) = R*R

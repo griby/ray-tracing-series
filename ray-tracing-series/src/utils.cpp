@@ -40,25 +40,28 @@ namespace rts
         return p;
     }
 
+    // Compute the reflected vector as described in chapter 8
     vec3 getReflectedVector(const vec3& v, const vec3& n)
     {
-        // Compute the reflected vector as described in chapter 8
         return v - 2 * dot(v, n) * n;
     }
 
-    // TODO Add more information from http://psgraphics.blogspot.com/2015/06/ray-tracing-refraction.html
-    // n sin(t) = n' sin(t')
-    // D = -cos(t) N + sin(t) Q
-    // T = -cos(t') N + sin(t') Q
-    // where D is the normalized incoming ray, T is the exiting one
-    // T = -cos(t') N + sin(t') * (D + cos(t) N) / sin(t)
-    // cos(t) = -dot(D, N)
-    // sin(t) = sqrt(1 - cos(t)^2) = sqrt(1, dot(D, N)^2)
-    // sin(t') = (n / n') * sin(t) = (n / n') * sqrt(1 - dot(D, N)^2)
-    // cos(t') = sqrt(1 - sin(t')^2) = sqrt(1 - (n / n')^2 * (1 - dot(D, N)^2))
-    // injecting cos(t), sin(t), sin(t') and cos(t') in T we get:
-    // T = -sqrt(1 - (n / n')^2 * (1 - dot(D, N)^2)) N + (n / n') * (D + -dot(D, N) N)
-    // T = (n / n') * D + (-dot(D, N) * (n / n') - sqrt(1 - (n / n')^2 * (1 - dot(D, N)^2))) N
+    // Compute the refracted vector as described in chapter 9
+    // More information can be found here http://psgraphics.blogspot.com/2015/06/ray-tracing-refraction.html
+    //      n sin(t) = n' sin(t')
+    // with D being the normalized incoming ray and T the exiting one:
+    //      D = -cos(t) N + sin(t) Q
+    //      T = -cos(t') N + sin(t') Q
+    // combining both of those:
+    //      T = -cos(t') N + sin(t') * (D + cos(t) N) / sin(t)
+    // now determining cos(t), sin(t), cos(t') and sin(t'):
+    //      cos(t) = -dot(D, N)
+    //      sin(t) = sqrt(1 - cos(t)^2) = sqrt(1, dot(D, N)^2)
+    //      sin(t') = (n / n') * sin(t) = (n / n') * sqrt(1 - dot(D, N)^2)
+    //      cos(t') = sqrt(1 - sin(t')^2) = sqrt(1 - (n / n')^2 * (1 - dot(D, N)^2))
+    // and finally injecting those back in in T we get:
+    //      T = -sqrt(1 - (n / n')^2 * (1 - dot(D, N)^2)) N + (n / n') * (D + -dot(D, N) N)
+    //      T = (n / n') * D + (-dot(D, N) * (n / n') - sqrt(1 - (n / n')^2 * (1 - dot(D, N)^2))) N
     bool getRefractedVector(const vec3& v, const vec3& n, float refIdxRatio, vec3& refracted)
     {
         float dt = dot(v, n);
