@@ -27,16 +27,16 @@ namespace rts // for ray tracing series
     const float CAMERA_FOV = 90.f;
 
     // Ray tracer
-    const int RAY_COUNT_PER_PIXEL = 100;
-    const int RAY_DEPTH_MAX = 50;
+    const int RAY_COUNT_PER_PIXEL = 150;
+    const int RAY_DEPTH_MAX = 20;
     const float RAY_LENGTH_MIN = 0.001f;
     const float RAY_LENGTH_MAX = std::numeric_limits<float>::max();
 
     // Multithreading
-    const int MULTITHREADING_SUBTASK_COUNT = 8;
+    const int MULTITHREADING_SUBTASK_COUNT = 16;
 
     // World
-    const bool WORLD_GENERATION_RANDOM = false;
+    const bool WORLD_GENERATION_RANDOM = true;
     const vec3 WORLD_BACKGROUND_COLOR_TOP(0.5f, 0.7f, 1.f);
     const vec3 WORLD_BACKGROUND_COLOR_BOTTOM(1.f, 1.f, 1.f);
 
