@@ -6,7 +6,7 @@ A ray tracer implementation based on the **Ray Tracing in One Weekend Book Serie
 More examples are available [here](#examples).
 
 ## Overview
-This repository features a C++11 implementation of a simple ray tracer based on the contents of the first book **Ray Tracing in One Weekend**. The two other books haven't been covered yet: **Ray Tracing the Next Week** and **Ray Tracing the Rest of Your Life**.
+This repository features a C++11 implementation of a simple ray tracer based on the contents of the book **Ray Tracing in One Weekend**. There are no external dependencies. The two other books of the series haven't been covered yet: **Ray Tracing the Next Week** and **Ray Tracing the Rest of Your Life**.
 
 It covers the following concepts:
  * Sphere shape, the only available shape (see [sphere.h](ray-tracing-series/src/sphere.h))
@@ -43,7 +43,7 @@ A number of defines and constants can be adjusted to configure the execution.
 
 The following defines can be added to the *Preprocessor Definitions* (see [defines.h](ray-tracing-series/src/defines.h)):
  * MULTITHREADING_ON: to activate the multithreading support
- * DETERMINISTIC_RNG: to render identical images given the same input (fixed random seeds even in a multithreaded environment)
+ * DETERMINISTIC_RNG: to render identical images given the same input (fixed random seeds even when multithreaded)
  * RENDER_NORMAL_MAP: to render the normal map of the scene (a ray is cast to get the normal but it isn't scattered)
  * RENDER_NO_MATERIAL: to render the image ignoring the objects material (the rays bounce with a simple reflection)
  * RENDER_GRAYSCALE: to render the grayscale image of the scene
@@ -70,7 +70,7 @@ Those output examples have been generated with the following configuration:
 
 Each run took approximately 130 seconds to generate on the 8 threads of an Intel Core i7-6700K Quad Core 4GHz processor.
 
-Those images all feature the setup mentioned earlier except for a few differences.
+Those images all feature the setup mentioned previously except for a few differences.
 
 ![alt text](output/v1.0_example_1.jpg)
 
@@ -80,7 +80,7 @@ In this first example (see above), the bigger sphere in the foreground is made o
 
 In this second example (see above), the bigger glass sphere in the center is tainted green and more of the smaller spheres are made out of glass (dielectric with refraction index = 1.5).
 
-Those glass spheres appear to be "floating" because they let the light pass through them, and thus, don't project any shadows. Also it's interesting to see how the refraction flips the image of what's behind them.
+Those glass spheres appear to be "floating" because light simply passes through them, so they cast no shadow. Also it's interesting to notice how the refraction flips the image of what's behind them.
 
 ![alt text](output/v1.0_example_3.jpg)
 
@@ -88,7 +88,7 @@ In this third example (see above), the background color has been changed to a da
 
 ![alt text](output/v1.0_example_4.jpg)
 
-In this fourth example (see above), more of the spheres are made out of smooth metal which shows recursive reflections.
+In this fourth example (see above), more spheres are made out of smooth metal which gives the opportunity for more recursive reflections.
 
 ## License
 
